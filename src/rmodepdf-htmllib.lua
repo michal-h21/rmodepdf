@@ -23,6 +23,7 @@ local htmltemplate = [[<!DOCTYPE html>
 <meta charset="utf-8" />
 <title>${Title}</title>
 <meta name="author" content="${Byline}" />
+<meta name="description" content="${Excerpt}" />
 </head>
 <body>
 ${content}
@@ -36,7 +37,11 @@ ${content}
 -- the metadata to the generated page
 local function html_skeleton(tmpfile, metadata)
   local function expand(str, tbl)
-    return str:gsub("${(.-)}", tbl)
+    return str:gsub("${(.-)}", function(a)
+      if metadata[a] then return metadata[a] end
+      return ""
+    end)
+
   end
   local f = io.open(tmpfile, "r")
   local content = f:read("*all")
@@ -68,7 +73,10 @@ local function readability(content, baseurl)
 end
 
 local function tidy(tmpfile)
-  local status = os.execute("tidy -q -asxml -m " .. tmpfile)
+  -- os type is provided by LuaTeX. we use it to get correct location of the null file
+  local nul = os.type == "windows" and "nul" or "/dev/null"
+  -- we want to surppress all warnings from tidy
+  local status = os.execute("tidy -q -asxml -m 2>" ..nul .. " " .. tmpfile)
   return status
 end
 
