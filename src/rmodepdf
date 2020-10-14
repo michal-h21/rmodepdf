@@ -3,14 +3,21 @@
 kpse.set_program_name "luatex"
 
 local lapp = require "lapp-mk4"
+local htmllib = require "rmodepdf-htmllib"
 
 local args = lapp [[
 Usage: rmodepdf [options] <url>
--h,--help     Print help message
--v,--version  Print version
-<url>         URL of the page to be converted
+-b,--baseurl    Base URL used when the HTML content is read from the standard input
+-h,--help       Print help message
+-v,--version    Print version
+<url> (string)  URL of the page to be converted
 ]]
 
-for k,v in pairs(args) do
-  print(k,v)
-end
+local content = htmllib.curl(args.url)
+local tmpfile, metadata = htmllib.readability(content, args.url)
+local status  = htmllib.tidy(tmpfile)
+local f = io.open(tmpfile, "r")
+local content = f:read("*all")
+f:close()
+print(content)
+os.remove(tmpfile)
