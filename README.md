@@ -9,4 +9,5 @@ that uses port of Firefox's reader view functionality.
 
 - TeX distribution
 - [rdrview](https://github.com/eafer/rdrview)
-- [HTML Tidy](
+- [HTML Tidy](https://www.html-tidy.org/)
+- [curl](https://curl.haxx.se/)
