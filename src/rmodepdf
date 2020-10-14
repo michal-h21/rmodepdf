@@ -1,0 +1,16 @@
+#!/usr/bin/env texlua
+-- this script works only with texlua, Lua interpreter based on LuaTeX
+kpse.set_program_name "luatex"
+
+local lapp = require "lapp-mk4"
+
+local args = lapp [[
+Usage: rmodepdf [options] <url>
+-h,--help     Print help message
+-v,--version  Print version
+<url>         URL of the page to be converted
+]]
+
+for k,v in pairs(args) do
+  print(k,v)
+end
