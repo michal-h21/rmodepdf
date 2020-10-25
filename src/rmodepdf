@@ -9,6 +9,7 @@ local msg = [[
 Usage: rmodepdf [options] <url>
 -b,--baseurl    Base URL used when the HTML content is read from the standard input
 -h,--help       Print help message
+-i,--imgdir     Directory for saved images
 -v,--version    Print version
 ]]
 
@@ -27,17 +28,23 @@ if args.version then version() end
 -- main content of the script
 local content
 local baseurl
-local url = args[1]
+local url = arg[1]
 
 if url and url ~= "" and url ~= "-" then
   -- read content from an url
-  baseurl = args.url
+  baseurl = url
   content = htmllib.curl(baseurl)
 else
   -- read content from stdin
   -- we must use baseurl with stdin
   if not args.baseurl or args.baseurl == "" then help("Missing baseurl") end
   content = io.read("*all")
+end
+
+-- 
+local imgdir = "img"
+if args.imgdir and args.imgdir~="" then
+  imgdir = args.imgdir
 end
 
 local tmpfile, metadata = htmllib.readability(content, baseurl)
