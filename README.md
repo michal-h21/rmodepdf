@@ -1,4 +1,4 @@
-# rmode-latex
+# rmodepdf
 ## Convert web pages in reader mode to PDF
 
 This utility converts text content of web pages to PDF using LaTeX. The text
