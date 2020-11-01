@@ -10,11 +10,11 @@ local function curl(url)
 end
 
 local function get_mimetype(url)
-  local command = io.popen("curl -sS -I " .. url,"r")
+  local command = io.popen("curl -s -I " .. url,"r")
   local content = command:read("*all")
   command:close()
   status = tonumber(content:match("^%S+%s+(%d+)"))
-  mimetype = content:match("content%-type:%s*([%a%/]+)")
+  mimetype = content:match("[cC]ontent%-[tT]ype:%s*([%a%/]+)")
   return status, mimetype
 end
 
@@ -132,7 +132,7 @@ local function download_images(contents, imgdir)
           local content = curl(src)
           if content then f:write(content) end
           f:close()
-          print(src, status, mimetype, newname, status)
+          print(src, mimetype, newname)
         end
         img:set_attribute("src", newname)
       end
