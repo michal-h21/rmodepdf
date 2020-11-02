@@ -4,6 +4,7 @@ kpse.set_program_name "luatex"
 
 local lapp = require "lapp-mk4"
 local htmllib = require "rmodepdf-htmllib"
+local htmlprocess = require "rmodepdf-htmltemplates"
 
 local msg = [[
 Usage: rmodepdf [options] <url>
@@ -53,5 +54,6 @@ local f = io.open(tmpfile, "r")
 local content = f:read("*all")
 f:close()
 content = htmllib.download_images(content, imgdir)
-print(content)
+local processed = htmlprocess.parse_xml(content)
+print(processed)
 os.remove(tmpfile)

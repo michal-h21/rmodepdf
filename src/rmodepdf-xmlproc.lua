@@ -1,3 +1,13 @@
+-- adapted code from https://github.com/michal-h21/luaxml-mathml
+--
+local domobject = require "luaxml-domobject"
+
+-- we need to define different actions for XML elements. The default action is
+-- to just process child elements and return the result
+local function default_action(element)
+  return process_children(element)
+end
+
 -- use template string to place the processed children
 local function simple_content(s)
   return function(element)
