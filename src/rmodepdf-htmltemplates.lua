@@ -7,8 +7,7 @@ xmltransform.add_action("html", [[
 \end{document}
 ]])
 
-xmltransform.add_action("p", [[
-
+xmltransform.add_action("p", [[%s
 ]])
 
 return xmltransform
