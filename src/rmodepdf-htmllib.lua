@@ -136,6 +136,10 @@ local function download_images(contents, imgdir)
         end
         img:set_attribute("src", newname)
       end
+    else
+      -- remove images that cannot be downloaded
+      print("Cannot download image: " .. src)
+      img:remove_node()
     end
   end
   return dom:serialize()
