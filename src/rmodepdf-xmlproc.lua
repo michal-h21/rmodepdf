@@ -8,6 +8,31 @@ local function default_action(element)
   return process_children(element)
 end
 
+-- convert Unicode characters to TeX sequences
+local unicodes = {
+  [35] = "\\#",
+  [36] = "\\$",
+  [37] = "\\%",
+  [38] = "\\&",
+  [60] = "\\textless{}",
+  [62] = "\\textgreater{}",
+  [92] = "\\textbackslash{}",
+  [94] = "\\^",
+  [95] = "\\_",
+  [123] = "\\{",
+  [125] = "\\}"
+}
+
+local function process_text(text)
+  local t = {}
+  -- process all Unicode characters and find if they should be replaced
+  for _, char in utf8.codes(text) do
+    -- construct new string with replacements or original char
+    t[#t+1] = unicodes[char] or utf8.char(char)
+  end
+  return table.concat(t)
+end
+
 -- use template string to place the processed children
 local function simple_content(s)
   return function(element)
@@ -15,9 +40,10 @@ local function simple_content(s)
     -- process attrubutes
     -- attribute should be marked as @{name}
     local expanded = s:gsub("@{(.-)}", function(name)
-      return element:get_attribute(name) or ""
+      return process_text(element:get_attribute(name) or "")
     end)
-    return string.format(expanded, content)
+    -- 
+    return expanded:gsub("%%s", function(a) return content end)
   end
 end
 
@@ -49,26 +75,6 @@ local function add_action(name, template)
   actions[name] = simple_content(template)
 end
 
--- convert Unicode characters to TeX sequences
-local unicodes = {
-  [35] = "\\#",
-  [38] = "\\&",
-  [60] = "\\textless{}",
-  [62] = "\\textgreater{}",
-  [92] = "\\textbackslash{}",
-  [123] = "\\{",
-  [125] = "\\}"
-}
-
-local function process_text(text)
-  local t = {}
-  -- process all Unicode characters and find if they should be replaced
-  for _, char in utf8.codes(text) do
-    -- construct new string with replacements or original char
-    t[#t+1] = unicodes[char] or utf8.char(char)
-  end
-  return table.concat(t)
-end
 
 function process_children(element)
   -- accumulate text from children elements
