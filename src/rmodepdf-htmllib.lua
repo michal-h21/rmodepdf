@@ -30,10 +30,11 @@ end
 local htmltemplate = [[<!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
 <title>${Title}</title>
 <meta name="author" content="${Byline}" />
 <meta name="description" content="${Excerpt}" />
+<meta name="url" content="${url}" />
+<meta name="site" content="${Site name}" />
 </head>
 <body>
 ${content}
@@ -42,13 +43,30 @@ ${content}
 ]]
 
 
+local html_escapes = {
+  [38] = "&amp;",
+  [60] = "&lt;",
+  [62] = "&gt;",
+}
+local function escape_html(text)
+  local t = {}
+  -- process all Unicode characters and find if they should be replaced
+  for _, char in utf8.codes(text) do
+    -- construct new string with replacements or original char
+    t[#t+1] = html_escapes[char] or utf8.char(char)
+  end
+  return table.concat(t)
+end
+
 -- update the cleaned html file with a full HTML template
 -- we use this to suppress some tidy errors and to pass 
 -- the metadata to the generated page
 local function html_skeleton(tmpfile, metadata)
   local function expand(str, tbl)
+    -- we don't want to escape HTML tags in content
+    local str =  str:gsub("${content}", metadata.content)
     return str:gsub("${(.-)}", function(a)
-      if metadata[a] then return metadata[a] end
+      if metadata[a] then return escape_html(metadata[a]) end
       return ""
     end)
 
@@ -77,6 +95,7 @@ local function readability(content, baseurl)
   xcommand:write(content)
   xcommand:close()
   local metadata = parse_metadatafile(metadatafile)
+  metadata.url = baseurl
   os.remove(metadatafile) -- we no longer need this file
   html_skeleton(tmpfile, metadata) -- prepare the file for tidy
   return tmpfile, metadata -- we can use tidy on the tmpfile, so we will keep the content inside
@@ -86,7 +105,7 @@ local function tidy(tmpfile)
   -- os type is provided by LuaTeX. we use it to get correct location of the null file
   local nul = os.type == "windows" and "nul" or "/dev/null"
   -- we want to surppress all warnings from tidy
-  local status = os.execute("tidy -q -asxml -m " .. tmpfile .. " 2>" ..nul )
+  local status = os.execute("tidy -q -asxml -m --tidy-mark no " .. tmpfile .. " 2>" ..nul )
   return status
 end
 
@@ -138,10 +157,17 @@ local function download_images(contents, imgdir)
       end
     else
       -- remove images that cannot be downloaded
-      print("Cannot download image: " .. src)
+      print("% Cannot download image: " .. src)
       img:remove_node()
     end
   end
+  -- remove generator meta
+  for _, meta in ipairs(dom:query_selector("meta")) do
+    local name = meta:get_attribute("name") 
+    local charset = meta:get_attribute("charset")
+    if (name  and name == "generator") or charset then meta:remove_node() end
+  end
+
   return dom:serialize()
 end
 
