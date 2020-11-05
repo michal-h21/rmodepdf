@@ -1,6 +1,9 @@
 -- adapted code from https://github.com/michal-h21/luaxml-mathml
 --
 local domobject = require "luaxml-domobject"
+local cssquery = require "luaxml-cssquery"
+-- initialize CSS selector object
+local css = cssquery()
 
 -- we need to define different actions for XML elements. The default action is
 -- to just process child elements and return the result
@@ -66,13 +69,13 @@ local actions = {
 }
 
 -- add more complicated action
-local function add_custom_action(name, fn)
-  actions[name] = fn
+local function add_custom_action(selector, fn)
+  css:add_selector(selector,fn)
 end
 
 -- normal actions
-local function add_action(name, template)
-  actions[name] = simple_content(template)
+local function add_action(selector, template)
+  css:add_selector(selector, simple_content(template))
 end
 
 
@@ -93,11 +96,17 @@ function process_children(element)
   return table.concat(t)
 end
 
+local function match_css(element)
+  local selectors = css:match_querylist(element)
+  if #selectors == 0 then return nil end
+  -- return function with the highest specificity
+  return selectors[1].func
+end
 
 function process_tree(element)
   -- find specific action for the element, or use the default action
   local element_name = element:get_element_name()
-  local action = actions[element_name] or default_action
+  local action = match_css(element) or default_action
   return action(element)
 end
 
