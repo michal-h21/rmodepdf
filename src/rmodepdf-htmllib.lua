@@ -64,7 +64,9 @@ end
 local function html_skeleton(tmpfile, metadata)
   local function expand(str, tbl)
     -- we don't want to escape HTML tags in content
-    local str =  str:gsub("${content}", metadata.content)
+    -- but we must escape % to avoid issues with Lua patterns
+    local content = metadata.content:gsub("%%", "%%%%")
+    local str =  str:gsub("${content}", content)
     return str:gsub("${(.-)}", function(a)
       if metadata[a] then return escape_html(metadata[a]) end
       return ""
