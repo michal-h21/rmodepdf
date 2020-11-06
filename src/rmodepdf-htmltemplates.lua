@@ -18,16 +18,23 @@ xmltransform.add_action("head", [[
 ]])
 
 xmltransform.add_action("meta", [[\textbf{@{name}} & @{content}\\ ]])
+xmltransform.add_action("meta[name='author']", [[\textbf{@{name}} & \textbf{@{content}}\\ ]])
 xmltransform.add_action("title", [[\textbf{title} & %s\\ ]])
 xmltransform.add_action("img", [[\includegraphics[width=\textwidth]{@{src}}]])
 
-xmltransform.add_action("h1", [[\addcontentsline{toc}{section}{%s}\section*{%s}]])
-xmltransform.add_action("h2", [[\addcontentsline{toc}{subsection}{%s}\subsection*{%s}]])
+xmltransform.add_action("h1", [[\addcontentsline{toc}{section}{%s}\section*{%s}
+]])
+xmltransform.add_action("h2", [[\addcontentsline{toc}{subsection}{%s}\subsection*{%s}
+]])
 -- don't add lower sectioning level than subsection
-xmltransform.add_action("h3", [[\addcontentsline{toc}{subsubsection}{%s}\subsubsection*{%s}]])
-xmltransform.add_action("h4", [[\addcontentsline{toc}{subsubsection}{%s}\subsubsection*{%s}]])
-xmltransform.add_action("h5", [[\addcontentsline{toc}{subsubsection}{%s}\subsubsection*{%s}]])
-xmltransform.add_action("h6", [[\addcontentsline{toc}{subsubsection}{%s}\subsubsection*{%s}]])
+xmltransform.add_action("h3", [[\addcontentsline{toc}{subsubsection}{%s}\subsubsection*{%s}
+]])
+xmltransform.add_action("h4", [[\addcontentsline{toc}{subsubsection}{%s}\subsubsection*{%s}
+]])
+xmltransform.add_action("h5", [[\addcontentsline{toc}{subsubsection}{%s}\subsubsection*{%s}
+]])
+xmltransform.add_action("h6", [[\addcontentsline{toc}{subsubsection}{%s}\subsubsection*{%s}
+]])
 
 xmltransform.add_action("i", [[\textit{%s}]])
 xmltransform.add_action("em", [[\emph{%s}]])
@@ -39,7 +46,7 @@ xmltransform.add_action("kbd", [[\texttt{%s}]])
 xmltransform.add_action("var", [[\texttt{%s}]])
 xmltransform.add_action("dfn", [[\texttt{%s}]])
 xmltransform.add_action("code", [[\texttt{%s}]])
-xmltransform.add_action("a", [[\textit{%s}\footnote{\texttt{@{href}}}]])
+xmltransform.add_action("a[href]", [[\textit{%s}\footnote{\texttt{@{href}}}]])
 
 
 local itemize = [[
@@ -90,11 +97,32 @@ xmltransform.add_action("th", "\\cell{%s}")
 
 -- we don't want to use verbatim, as all special characters are already escaped
 -- we just need to use a trick to support spaces at the start of lines
-xmltransform.add_action("pre", [[{\obeylines\ttfamily\catcode`\ =\active\def {\ }%%
-%s}]])
+xmltransform.add_action("pre", [[{\parindent=0pt\obeylines\ttfamily\catcode`\ =\active\def {\ }%%
+%s}
+
+]])
+
+
+xmltransform.add_action("details", [[%s
+]])
+
+xmltransform.add_action("details summary", [[
+\medskip
+\noindent %s
+
+\smallskip
+\noindent
+]])
+
 
 
 xmltransform.add_action("p", [[%s
+
 ]])
+
+-- some fixes for weird web pages
+xmltransform.add_action("a p", [[%s]])
+xmltransform.add_action("h1 a[href], h2 a[href], h3 a[href], h4 a[href], h5 a[href], h6 a[href]", "%s")
+
 
 return xmltransform
