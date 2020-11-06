@@ -2,7 +2,7 @@ local domobject = require "luaxml-domobject"
 
 -- download content of URL
 local function curl(url)
-  local command = io.popen("curl -sS ".. url,"r")
+  local command = io.popen("curl -sS '".. url.. "'","r")
   if not command then return nil, "Cannot execute curl" end
   local content = command:read("*all")
   command:close()
@@ -10,7 +10,7 @@ local function curl(url)
 end
 
 local function get_mimetype(url)
-  local command = io.popen("curl -s -I " .. url,"r")
+  local command = io.popen("curl -s -I '" .. url .. "'","r")
   local content = command:read("*all")
   command:close()
   status = tonumber(content:match("^%S+%s+(%d+)"))
@@ -107,7 +107,7 @@ local function tidy(tmpfile)
   -- os type is provided by LuaTeX. we use it to get correct location of the null file
   local nul = os.type == "windows" and "nul" or "/dev/null"
   -- we want to surppress all warnings from tidy
-  local status = os.execute("tidy -q -asxml -m --tidy-mark no " .. tmpfile .. " 2>" ..nul )
+  local status = os.execute("tidy -q -asxml -m --tidy-mark no --wrap-attributes no" .. tmpfile .. " 2>" ..nul )
   return status
 end
 
