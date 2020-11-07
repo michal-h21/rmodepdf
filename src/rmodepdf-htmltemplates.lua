@@ -3,6 +3,8 @@ local xmltransform = require "rmodepdf-xmlproc.lua"
 xmltransform.add_action("html", [[
 \documentclass{article}
 \usepackage{graphicx,csquotes,cals}
+\usepackage[@{lang}]{babel}
+
 \begin{document}
 %s
 \end{document}

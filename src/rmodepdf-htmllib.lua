@@ -1,4 +1,5 @@
 local domobject = require "luaxml-domobject"
+local languages = require "rmodepdf-languages"
 
 -- download content of URL
 local function curl(url)
@@ -28,7 +29,7 @@ local function parse_metadatafile(metadatafile)
 end
 
 local htmltemplate = [[<!DOCTYPE html>
-<html>
+<html lang="${language}">
 <head>
 <title>${Title}</title>
 <meta name="author" content="${Byline}" />
@@ -84,6 +85,11 @@ local function html_skeleton(tmpfile, metadata)
   f:close()
 end
 
+local function detect_language(str)
+  -- detect main document language
+  return str:match("<html[^>]+lang=['\"](.-)['\"]") or "en"
+end
+
 -- run the readability command to remove clutter from the HTML page
 local function readability(content, baseurl)
   local tmpfile = os.tmpname() -- the clean up html content will be saved here
@@ -98,6 +104,7 @@ local function readability(content, baseurl)
   xcommand:close()
   local metadata = parse_metadatafile(metadatafile)
   metadata.url = baseurl
+  metadata.language = languages.get_babel_name(detect_language(content))
   os.remove(metadatafile) -- we no longer need this file
   html_skeleton(tmpfile, metadata) -- prepare the file for tidy
   return tmpfile, metadata -- we can use tidy on the tmpfile, so we will keep the content inside
