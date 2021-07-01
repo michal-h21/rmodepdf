@@ -1,4 +1,5 @@
-local xmltransform = require "rmodepdf-xmlproc.lua"
+-- local xmltransform = require "rmodepdf-xmlproc.lua"
+local xmltransform = require "luaxml-transform"
 
 xmltransform.add_action("html", [[
 \documentclass{article}
