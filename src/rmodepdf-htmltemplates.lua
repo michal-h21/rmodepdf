@@ -103,7 +103,7 @@ xmltransform.add_action("th", "\\cell{%s}")
 xmltransform.add_action("pre", [[{\parindent=0pt\obeylines\ttfamily\catcode`\ =\active\def {\ }%%
 %s}
 
-]])
+]], {verbatim=true})
 
 
 xmltransform.add_action("details", [[%s
