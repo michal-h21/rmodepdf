@@ -117,11 +117,22 @@ xmltransform.add_action("details summary", [[
 \noindent
 ]])
 
+xmltransform.add_action("figure", [[
+\begin{figure}[hbt!]
+
+%s
+
+\end{figure}
+]])
+
+xmltransform.add_action("figcaption", [[\caption{%s}]])
 
 
 xmltransform.add_action("p", [[%s
 
 ]])
+
+xmltransform.add_action("br", [[\\]])
 
 -- some fixes for weird web pages
 xmltransform.add_action("a p", [[%s]])
