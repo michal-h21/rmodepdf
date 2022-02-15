@@ -7,18 +7,48 @@ local function list_to_hash(tbl)
   return t
 end
 
-function traverse_elements(current, ignored_elements, allowed_commands)
+local function is_math(text, allowed_commands)
+  if text:match("\\%(.+\\%)") then return true end
+  if text:match("\\%[.+\\%]") then return true end
+  if text:match("%$%$.+%$%$") then return true end
+  -- support for $ is a bit more complicated, as we don't want to 
+  -- be too eagerly. $ can be used in normal text
+  -- match $ ... \ ... $
+  if text:match("%$.*%\\.+%$") then return true end
+  -- match $ ... = ... $ 
+  if text:match("%$.+%=.+%$") then return true end
+  if text:match("\\begin.+\\end") then return true end
+end
+
+local function fix_latex(child, allowed_commands)
+  -- at this moment, we will just add the <mathjax> element around the
+  -- whole text that contain LaTeX math. we can add more advanced
+  -- parser in the future, but I think that it sufficess at the moment
+  local text = child._text
+  if is_math(text, allowed_commands) then
+    -- add the mathjax element
+    local parent = child:get_parent()
+    local mathjax = parent:create_element("mathjax")
+    local text = mathjax:create_text_node(text)
+    mathjax:add_child_node(text)
+    child:replace_node(mathjax)
+  end
+end
+
+local function traverse_elements(current, ignored_elements, allowed_commands)
 	local current = current or {}
 	-- Following situation may happen when this method is called directly on the parsed object
 	if not current:get_node_type() then
 		current = current:root_node() 
 	end
 	if current:is_element() or current:get_node_type() == "ROOT" then
-    print("processing", current:get_element_name())
     if not ignored_elements[current:get_element_name()] then
-      print("not ignored")
-			for _, child in ipairs(self:get_children(current)) do
-				traverse_elements(child, ignored_elements, allowed_commands)
+			for _, child in ipairs(current:get_children()) do
+        if child:is_text() then
+          fix_latex(child, allowed_commands)
+        else
+          traverse_elements(child, ignored_elements, allowed_commands)
+        end
 			end
 		end
 	end
