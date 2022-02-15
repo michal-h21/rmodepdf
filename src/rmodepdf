@@ -5,6 +5,8 @@ kpse.set_program_name "luatex"
 local lapp = require "lapp-mk4"
 local htmllib = require "rmodepdf-htmllib"
 local htmlprocess = require "rmodepdf-htmltemplates"
+local domobject = require "luaxml-domobject"
+local mathjax = require "rmodepdf-mathjax"
 
 local msg = [[
 Usage: rmodepdf [options] <url>
@@ -54,6 +56,11 @@ local f = io.open(tmpfile, "r")
 local content = f:read("*all")
 f:close()
 content = htmllib.download_images(content, imgdir)
-local processed = htmlprocess.parse_xml(content)
+local dom = domobject.parse(content)
+-- keep inline LaTeX code, for example MathJax content
+local ignored = {"pre", "code"}
+local allowed_commands = {"ref", "pageref", "cleveref", "nameref"}
+mathjax.process_latex(dom, ignored, allowed_commands)
+local processed = htmlprocess.process_dom(dom)
 print(processed)
 os.remove(tmpfile)
