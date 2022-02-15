@@ -46,7 +46,7 @@ xmltransform.add_action("strong", [[\textbf{%s}]])
 xmltransform.add_action("tt", [[\texttt{%s}]])
 xmltransform.add_action("samp", [[\texttt{%s}]])
 xmltransform.add_action("kbd", [[\texttt{%s}]])
-xmltransform.add_action("var", [[\texttt{%s}]])
+xmltransform.add_action("var", [[\textit{%s}]])
 xmltransform.add_action("dfn", [[\texttt{%s}]])
 xmltransform.add_action("code", [[\texttt{%s}]])
 xmltransform.add_action("a[href]", [[\textit{%s}\footnote{\texttt{@{href}}}]])
@@ -98,13 +98,18 @@ xmltransform.add_action("td", "\\cell{%s}")
 xmltransform.add_action("th", "\\cell{%s}")
 
 
--- we don't want to use verbatim, as all special characters are already escaped
--- we just need to use a trick to support spaces at the start of lines
+-- this is the original code for verbatim, but I changed LuaXML to not escape characters in verbatim,
+-- so we can use the verbatim environment
 xmltransform.add_action("pre", [[{\parindent=0pt\obeylines\ttfamily\catcode`\ =\active\def {\ }%%
 %s}
 
 ]], {verbatim=true})
+xmltransform.add_action("pre *", [[%s]])
 
+-- 
+xmltransform.add_action("pre", [[
+\begin{verbatim}%s\end{verbatim}
+]], {verbatim=true})
 
 xmltransform.add_action("details", [[%s
 ]])
@@ -128,7 +133,9 @@ xmltransform.add_action("figure", [[
 xmltransform.add_action("figcaption", [[\caption{%s}]])
 
 
-xmltransform.add_action("p", [[%s
+xmltransform.add_action("p", [[
+
+%s
 
 ]])
 
@@ -138,5 +145,8 @@ xmltransform.add_action("br", [[\\]])
 xmltransform.add_action("a p", [[%s]])
 xmltransform.add_action("h1 a[href], h2 a[href], h3 a[href], h4 a[href], h5 a[href], h6 a[href]", "%s")
 
+
+-- mathjax is special element added by rmodepdf around LaTeX math
+xmltransform.add_action("mathjax",[[%s]], {verbatim=true,collapse_newlines=false})
 
 return xmltransform
