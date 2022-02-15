@@ -110,6 +110,7 @@ local function readability(content, baseurl)
   return tmpfile, metadata -- we can use tidy on the tmpfile, so we will keep the content inside
 end
 
+-- in the future, we should convert HTML to XML ourselves, because tidy removes spaces when we want them
 local function tidy(tmpfile)
   -- os type is provided by LuaTeX. we use it to get correct location of the null file
   local nul = os.type == "windows" and "nul" or "/dev/null"
