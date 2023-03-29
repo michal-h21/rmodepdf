@@ -13,6 +13,7 @@ Usage: rmodepdf [options] <url>
 -b,--baseurl    Base URL used when the HTML content is read from the standard input
 -h,--help       Print help message
 -i,--imgdir     Directory for saved images
+-t,--template   LaTeX template
 -v,--version    Print version
 ]]
 
@@ -50,6 +51,24 @@ if args.imgdir and args.imgdir~="" then
   imgdir = args.imgdir
 end
 
+local template = [[
+\documentclass{article}
+\usepackage{graphicx,csquotes,cals}
+\usepackage[@{lang}]{babel}
+
+\begin{document}
+%s
+\end{document}
+]]
+
+if args.template and args.template~="" then
+  local f = io.open(args.template, "r")
+  if f then
+    template = f:read("*all")
+    f:close()
+  end
+end
+
 local tmpfile, metadata = htmllib.readability(content, baseurl)
 local status  = htmllib.tidy(tmpfile)
 local f = io.open(tmpfile, "r")
@@ -61,6 +80,8 @@ local dom = domobject.parse(content)
 local ignored = {"pre", "code"}
 local allowed_commands = {"ref", "pageref", "cleveref", "nameref"}
 mathjax.process_latex(dom, ignored, allowed_commands)
+htmlprocess.add_action("html", template)
+
 local processed = htmlprocess.process_dom(dom)
 print(processed)
 os.remove(tmpfile)

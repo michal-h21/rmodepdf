@@ -1,16 +1,6 @@
 -- local xmltransform = require "rmodepdf-xmlproc.lua"
 local xmltransform = require "luaxml-transform"
 
-xmltransform.add_action("html", [[
-\documentclass{article}
-\usepackage{graphicx,csquotes,cals}
-\usepackage[@{lang}]{babel}
-
-\begin{document}
-%s
-\end{document}
-]])
-
 -- this trick is used to print @{} in TeX: @@{}{}
 xmltransform.add_action("head", [[
 \noindent\begin{tabular}{@@{}{}p{.2\textwidth}p{.75\textwidth}@@{}{}}
