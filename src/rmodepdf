@@ -75,7 +75,7 @@ local f = io.open(tmpfile, "r")
 local content = f:read("*all")
 f:close()
 content = htmllib.download_images(content, imgdir)
-local dom = domobject.parse(content)
+local dom = domobject.html_parse(content)
 -- keep inline LaTeX code, for example MathJax content
 local ignored = {"pre", "code"}
 local allowed_commands = {"ref", "pageref", "cleveref", "nameref"}
