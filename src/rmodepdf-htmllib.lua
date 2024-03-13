@@ -3,7 +3,7 @@ local languages = require "rmodepdf-languages"
 
 -- download content of URL
 local function curl(url)
-  local command = io.popen("curl -A 'Mozilla/5.0 rdrview/0.1' -sS '".. url.. "'","r")
+  local command = io.popen("curl --compressed -A 'Mozilla/5.0 rdrview/0.1' -sS '".. url.. "'","r")
   if not command then return nil, "Cannot execute curl" end
   local content = command:read("*all")
   command:close()
