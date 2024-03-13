@@ -135,8 +135,7 @@ local function hash_img_name(imgdir, url, mimetype)
   return imgdir .. hash .. "." .. extension
 end
 
-local function download_images(contents, imgdir)
-  local dom = domobject.parse(contents)
+local function download_images(dom, imgdir)
   local images = dom:query_selector("img")
   -- stop process if the page doesn't contain any images
   if #images == 0 then return contents end
@@ -178,7 +177,7 @@ local function download_images(contents, imgdir)
     if (name  and name == "generator") or charset then meta:remove_node() end
   end
 
-  return dom:serialize()
+  return dom
 end
 
 return {
