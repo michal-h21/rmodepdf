@@ -79,7 +79,7 @@ if args.template and args.template~="" then
 end
 
 local tmpfile, metadata = htmllib.readability(content, baseurl)
-local status  = htmllib.tidy(tmpfile)
+-- local status  = htmllib.tidy(tmpfile)
 local f = io.open(tmpfile, "r")
 local content = f:read("*all")
 f:close()
