@@ -138,7 +138,7 @@ end
 local function download_images(dom, imgdir)
   local images = dom:query_selector("img")
   -- stop process if the page doesn't contain any images
-  if #images == 0 then return contents end
+  if #images == 0 then return dom end
   -- create 
   local status, msg = lfs.mkdir(imgdir)
   for _, img in ipairs(images) do
@@ -163,6 +163,9 @@ local function download_images(dom, imgdir)
           print(src, mimetype, newname)
         end
         img:set_attribute("src", newname)
+      else
+        -- remove unsupported images
+        img:remove_node()
       end
     else
       -- remove images that cannot be downloaded
