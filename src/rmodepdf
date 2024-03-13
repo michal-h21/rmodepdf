@@ -6,6 +6,7 @@ local lapp = require "lapp-mk4"
 local htmllib = require "rmodepdf-htmllib"
 local htmlprocess = require "rmodepdf-htmltemplates"
 local domobject = require "luaxml-domobject"
+local encodings = require "luaxml-encodings"
 local mathjax = require "rmodepdf-mathjax"
 
 local msg = [[
@@ -43,6 +44,14 @@ else
   -- we must use baseurl with stdin
   if not args.baseurl or args.baseurl == "" then help("Missing baseurl") end
   content = io.read("*all")
+end
+
+local enc = encodings.find_html_encoding(content)
+if enc then
+  local mapping = encodings.load_mapping(enc)
+  if mapping then
+    content = encodings.recode(content, mapping)
+  end
 end
 
 -- 
