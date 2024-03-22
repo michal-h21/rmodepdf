@@ -123,9 +123,9 @@ end
 local mime_to_ext = {
   ["image/png"] = {ext = "png"},
   ["image/jpeg"] = {ext = "jpg"},
-  ["image/svg+xml"] = {ext = "pdf"},
-  ["image/gif"] = {ext = "png"},
-  ["image/webp"] = {ext = "png"},
+  ["image/svg+xml"] = {ext = "pdf", convert = config.img_convert.svg},
+  ["image/gif"] = {ext = "png", convert = config.img_convert.gif},
+  ["image/webp"] = {ext = "png", convert = config.img_convert.webp},
 }
 
 local function hash_img_name(imgdir, url, mimetype)

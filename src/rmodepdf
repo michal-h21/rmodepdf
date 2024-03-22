@@ -9,6 +9,14 @@ local domobject = require "luaxml-domobject"
 local encodings = require "luaxml-encodings"
 local mathjax = require "rmodepdf-mathjax"
 
+config = {
+  img_convert = {
+    svg = "convert ${src} ${dest}",
+    webp = "convert ${src} ${dest}",
+    gif = "convert ${src} ${dest}",
+  }
+}
+
 local msg = [[
 Usage: rmodepdf [options] url
 -b,--baseurl                Base URL used when the HTML content is read from the standard input
