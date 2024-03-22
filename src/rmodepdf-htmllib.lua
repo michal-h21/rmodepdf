@@ -121,8 +121,11 @@ end
 
 
 local mime_to_ext = {
-  ["image/png"] = "png",
-  ["image/jpeg"] = "jpg"
+  ["image/png"] = {ext = "png"},
+  ["image/jpeg"] = {ext = "jpg"},
+  ["image/svg+xml"] = {ext = "pdf"},
+  ["image/gif"] = {ext = "png"},
+  ["image/webp"] = {ext = "png"},
 }
 
 local function hash_img_name(imgdir, url, mimetype)
@@ -132,7 +135,7 @@ local function hash_img_name(imgdir, url, mimetype)
   if not extension then return nil, "Cannot find extension for mimetype: " .. mimetype end
   -- md5 should be enough for this purpose
   local hash = md5.sumhexa(url)
-  return imgdir .. hash .. "." .. extension
+  return imgdir .. hash .. "." .. extension.ext
 end
 
 local function download_images(dom, imgdir)
