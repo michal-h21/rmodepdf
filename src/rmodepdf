@@ -10,19 +10,27 @@ local encodings = require "luaxml-encodings"
 local mathjax = require "rmodepdf-mathjax"
 
 local msg = [[
-Usage: rmodepdf [options] <url>
--b,--baseurl    Base URL used when the HTML content is read from the standard input
--h,--help       Print help message
--i,--imgdir     Directory for saved images
--t,--template   LaTeX template
--v,--version    Print version
+Usage: rmodepdf [options] url
+-b,--baseurl                Base URL used when the HTML content is read from the standard input
+-h,--help                   Print help message
+-i,--imgdir   (default img) Download images and save them to the specified directory
+-t,--template (default "")  LaTeX template
+-p,--print                  Print the converted LaTeX source
+-v,--version                Print version
+<url>         (string)
 ]]
+ -- <urladdress>  (string)      URL to be processed
 
 local args = lapp(msg)
 
 local function help(err)
   if err then print(err) end
   print(msg) 
+  os.exit()
+end
+
+local function version()
+  print("Rmodepdf version {{version}}")
   os.exit()
 end
 
@@ -33,7 +41,7 @@ if args.version then version() end
 -- main content of the script
 local content
 local baseurl
-local url = arg[1]
+local url = args.url
 
 if url and url ~= "" and url ~= "-" then
   -- read content from an url
@@ -62,7 +70,7 @@ end
 
 local template = [[
 \documentclass{article}
-\usepackage{graphicx,csquotes,cals}
+\usepackage{graphicx,csquotes,cals,responsive,linebreaker}
 \usepackage[@{lang}]{babel}
 
 \begin{document}
@@ -92,5 +100,7 @@ mathjax.process_latex(dom, ignored, allowed_commands)
 htmlprocess.add_action("html", template)
 
 local processed = htmlprocess.process_dom(dom)
-print(processed)
+if args.print then
+  print(processed)
+end
 os.remove(tmpfile)
