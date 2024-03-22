@@ -2,13 +2,6 @@
 -- this script works only with texlua, Lua interpreter based on LuaTeX
 kpse.set_program_name "luatex"
 
-local lapp = require "lapp-mk4"
-local htmllib = require "rmodepdf-htmllib"
-local htmlprocess = require "rmodepdf-htmltemplates"
-local domobject = require "luaxml-domobject"
-local encodings = require "luaxml-encodings"
-local mathjax = require "rmodepdf-mathjax"
-
 config = {
   img_convert = {
     svg = "convert ${src} ${dest}",
@@ -16,6 +9,14 @@ config = {
     gif = "convert ${src} ${dest}",
   }
 }
+
+local lapp = require "lapp-mk4"
+local htmllib = require "rmodepdf-htmllib"
+local htmlprocess = require "rmodepdf-htmltemplates"
+local domobject = require "luaxml-domobject"
+local encodings = require "luaxml-encodings"
+local mathjax = require "rmodepdf-mathjax"
+
 
 local msg = [[
 Usage: rmodepdf [options] url
@@ -47,20 +48,24 @@ if args.help then help() end
 if args.version then version() end
 
 -- main content of the script
-local content
+local content, err_msg
 local baseurl
 local url = args.url
 
 if url and url ~= "" and url ~= "-" then
   -- read content from an url
   baseurl = url
-  content = htmllib.curl(baseurl)
+  content, err_msg = htmllib.curl(baseurl)
+  if not content then
+    help(err_msg)
+  end
 else
   -- read content from stdin
   -- we must use baseurl with stdin
   if not args.baseurl or args.baseurl == "" then help("Missing baseurl") end
   content = io.read("*all")
 end
+
 
 local enc = encodings.find_html_encoding(content)
 if enc then

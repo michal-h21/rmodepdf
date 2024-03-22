@@ -1,15 +1,6 @@
 local domobject = require "luaxml-domobject"
 local languages = require "rmodepdf-languages"
 
--- download content of URL
-local function curl(url)
-  local command = io.popen("curl --compressed -A 'Mozilla/5.0 rdrview/0.1' -sS '".. url.. "'","r")
-  if not command then return nil, "Cannot execute curl" end
-  local content = command:read("*all")
-  command:close()
-  return content
-end
-
 local function get_mimetype(url)
   local command = io.popen("curl -s -I '" .. url .. "'","r")
   local content = command:read("*all")
@@ -18,6 +9,19 @@ local function get_mimetype(url)
   mimetype = content:match("[cC]ontent%-[tT]ype:%s*([%a%/]+)")
   return status, mimetype
 end
+
+-- download content of URL
+local function curl(url)
+  local status, mimetype = get_mimetype(url)
+  if status > 400 then return nil, "Cannot open url: " .. url end
+  print("jsme tu", status, mimetype)
+  local command = io.popen("curl --compressed -A 'Mozilla/5.0 rdrview/0.1' -sS '".. url.. "'","r")
+  if not command then return nil, "Cannot execute curl" end
+  local content = command:read("*all")
+  command:close()
+  return content
+end
+
 
 local function parse_metadatafile(metadatafile)
   local metadata = {}
