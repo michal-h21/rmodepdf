@@ -26,6 +26,7 @@ Usage: rmodepdf [options] url
 -i,--imgdir   (default img) Download images and save them to the specified directory
 -n,--noimages               Don't download images
 -t,--template (default "")  LaTeX template
+-o,--output   (default "")  Output file name
 -p,--print                  Print the converted LaTeX source
 -v,--version                Print version
 <url>         (string)
@@ -107,6 +108,19 @@ if args.template and args.template~="" then
 end
 
 local tmpfile, metadata = htmllib.readability(content, baseurl)
+for k,v in pairs(metadata) do
+  print(k,v)
+end
+
+local output = htmllib.clean_title(metadata.Title)
+if not output then 
+  output = "rmodepdf-" .. os.date("%Y%m%d-%H-%M")
+end
+
+if args.output and args.output~='""' then
+  output = args.output
+end
+
 local f = io.open(tmpfile, "r")
 local content = f:read("*all")
 f:close()
@@ -129,6 +143,6 @@ local processed = htmlprocess.process_dom(dom)
 if args.print then
   print(processed)
 else 
-
+  print(output)
 end
 os.remove(tmpfile)

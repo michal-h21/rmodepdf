@@ -200,10 +200,17 @@ local function download_images(dom, imgdir)
   return dom
 end
 
+local function clean_title(title)
+  if not title then return nil, "no title given" end
+  title = title:gsub("[%.%,%?%!%:]", ""):gsub("%s+", "_")
+  return title
+end
+
 return {
   curl = curl,
   readability = readability,
   tidy = tidy,
   download_images = download_images,
+  clean_title = clean_title,
 
 }
