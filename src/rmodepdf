@@ -34,6 +34,9 @@ Usage: rmodepdf [options] url
 
 local args = lapp(msg)
 
+-- make the command line arguments available in global config
+config.args = args
+
 local function help(err)
   if err then print(err) end
   print(msg) 
@@ -108,7 +111,14 @@ local f = io.open(tmpfile, "r")
 local content = f:read("*all")
 f:close()
 local dom = domobject.html_parse(content)
-content = htmllib.download_images(dom, imgdir)
+
+if not args.noimages then
+  content = htmllib.download_images(dom, imgdir)
+else
+  -- remove images with the --noimages command line option
+  for _, el in ipairs(dom:query_selector("img")) do el:remove_node() end
+end
+
 -- keep inline LaTeX code, for example MathJax content
 local ignored = {"pre", "code"}
 local allowed_commands = {"ref", "pageref", "cleveref", "nameref"}
@@ -118,5 +128,7 @@ htmlprocess.add_action("html", template)
 local processed = htmlprocess.process_dom(dom)
 if args.print then
   print(processed)
+else 
+
 end
 os.remove(tmpfile)
