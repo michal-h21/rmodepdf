@@ -4,9 +4,10 @@ kpse.set_program_name "luatex"
 
 config = {
   img_convert = {
-    svg = "convert ${src} ${dest}",
-    webp = "convert ${src} ${dest}",
-    gif = "convert ${src} ${dest}",
+    -- all supported commands should read data from stdin
+    svg = "cairosvg -o ${dest} -",
+    webp = "magick WEBP:- ${dest}", 
+    gif = "magick GIF:-[0,0] ${dest}", -- [0,0] should select the first frame from animated GIF
   }
 }
 
@@ -23,6 +24,7 @@ Usage: rmodepdf [options] url
 -b,--baseurl                Base URL used when the HTML content is read from the standard input
 -h,--help                   Print help message
 -i,--imgdir   (default img) Download images and save them to the specified directory
+-n,--noimages               Don't download images
 -t,--template (default "")  LaTeX template
 -p,--print                  Print the converted LaTeX source
 -v,--version                Print version
@@ -83,8 +85,10 @@ end
 
 local template = [[
 \documentclass{article}
-\usepackage{graphicx,csquotes,cals,responsive,linebreaker}
+\usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec}
 \usepackage[@{lang}]{babel}
+\setmainfont{Literata}
+
 
 \begin{document}
 %s
@@ -100,7 +104,6 @@ if args.template and args.template~="" then
 end
 
 local tmpfile, metadata = htmllib.readability(content, baseurl)
--- local status  = htmllib.tidy(tmpfile)
 local f = io.open(tmpfile, "r")
 local content = f:read("*all")
 f:close()
