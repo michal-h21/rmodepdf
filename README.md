@@ -18,6 +18,7 @@ ToDo:
 ## Dependencies
 
 - TeX distribution
-- [rdrview](https://github.com/eafer/rdrview)
-- [HTML Tidy](https://www.html-tidy.org/)
-- [curl](https://curl.haxx.se/)
+- [Rdrview](https://github.com/eafer/rdrview)
+- [Curl](https://curl.haxx.se/)
+- [ImageMagick](https://imagemagick.org/index.php) -- for conversion of Gif and Webp images
+- [CairoSVG](https://cairosvg.org/) -- for conversion of SVG images
