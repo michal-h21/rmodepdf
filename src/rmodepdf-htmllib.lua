@@ -162,12 +162,22 @@ local function download_images(dom, imgdir)
         if status then
           status:close()
         else
-          local f = io.open(newname, "w")
-          -- load image from server and save it to a local file
           local content = curl(src)
-          if content then f:write(content) end
-          f:close()
-          print(src, mimetype, newname)
+          local command = mime_to_ext[mimetype].convert
+          if content then 
+            -- test if we need to convert the source image (for example WEBP, SVG or GIF) to a format supported by LuaTeX
+            if command then
+              command = command:gsub("%${dest}", newname)
+              local exec = io.popen(command, "w")
+              exec:write(content)
+              exec:close()
+            -- else load image from server and save it to a local file
+            else
+              local f = io.open(newname, "w")
+              f:write(content) 
+              f:close()
+            end
+          end
         end
         img:set_attribute("src", newname)
       else
