@@ -1,4 +1,3 @@
--- local xmltransform = require "rmodepdf-xmlproc.lua"
 local xmltransform = require "luaxml-transform"
 
 -- this trick is used to print @{} in TeX: @@{}{}
