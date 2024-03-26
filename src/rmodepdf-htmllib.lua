@@ -1,5 +1,6 @@
 local domobject = require "luaxml-domobject"
 local languages = require "rmodepdf-languages"
+local tmpfiles  = require "rmodepdf-tmpfiles"
 
 local function get_mimetype(url)
   local command = io.popen("curl -s -I '" .. url .. "'","r")
@@ -96,8 +97,8 @@ end
 
 -- run the readability command to remove clutter from the HTML page
 local function readability(content, baseurl)
-  local tmpfile = os.tmpname() -- the clean up html content will be saved here
-  local metadatafile = os.tmpname() -- we can get also some metadata
+  local tmpfile = tmpfiles.tmpname() -- the clean up html content will be saved here
+  local metadatafile = tmpfiles.tmpname() -- we can get also some metadata
   local command = io.popen(string.format("rdrview -H -u %s > %s", baseurl, tmpfile), "w")
   if not command then return nil, "cannot load rdrview" end
   command:write(content)
@@ -134,20 +135,33 @@ local mime_to_ext = {
 
 local function hash_img_name(imgdir, url, mimetype)
   -- normalize imgdir
-  local imgdir = imgdir:match("/$") and imgdir or imgdir .. "/"
+  print("imgdir: " .. imgdir .. ";")
+  if imgdir == '""' or imgdir == "" then 
+    imgdir = "" 
+  else
+    imgdir = imgdir:match("/$") and imgdir or imgdir .. "/"
+  end
   local extension = mime_to_ext[ mimetype ] 
   if not extension then return nil, "Cannot find extension for mimetype: " .. mimetype end
   -- md5 should be enough for this purpose
   local hash = md5.sumhexa(url)
-  return imgdir .. hash .. "." .. extension.ext
+  local imgname =  imgdir .. hash .. "." .. extension.ext
+  if imgdir == "" and not config.args.print then
+    -- if user didn't specify the img dir, we will remove all images
+    tmpfiles.register_tmpname(imgname)
+  end
+  print("new image name: " .. imgname)
+  return imgname
 end
 
 local function download_images(dom, imgdir)
   local images = dom:query_selector("img")
   -- stop process if the page doesn't contain any images
   if #images == 0 then return dom end
-  -- create 
-  local status, msg = lfs.mkdir(imgdir)
+  -- create directory for images
+  if imgdir and imgdir ~= "" then
+    local status, msg = lfs.mkdir(imgdir)
+  end
   for _, img in ipairs(images) do
     local src = img:get_attribute("src")
     local status, mimetype = get_mimetype(src)
