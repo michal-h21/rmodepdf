@@ -220,11 +220,34 @@ local function clean_title(title)
   return title
 end
 
+
+local function set_page_dimensions(dom, format, pagestyle)
+  -- save information for the geometry package and \pageformat as attributes for the <html> element,
+  -- so the tranform library can use them in the template for the page
+  local html = dom:query_selector("html")[1]
+  if not html then return nil, "cannot find the html element" end
+  html:set_attribute("pagestyle", pagestyle)
+  -- now get information for the specified page format from the configuration
+  -- each format should have corresponding table in the form of {paperwidth=...,paperheight=...,margin=...}
+  local pageformat = config.page_formats[format]
+  if pageformat then
+    -- construct keyval argument for the geometry package
+    local s = {} 
+    for k,v in pairs(pageformat) do
+      s[#s+1] =  k .. "=" .. v
+    end
+    html:set_attribute("geometry", table.concat(s, ","))
+  else 
+    html:set_attribute("geometry", "")
+  end
+
+end
+
 return {
   curl = curl,
   readability = readability,
   tidy = tidy,
   download_images = download_images,
   clean_title = clean_title,
-
+  set_page_dimensions=set_page_dimensions,
 }

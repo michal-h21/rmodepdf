@@ -17,6 +17,9 @@ config = {
   aux_files = {-- extensions of auxilary files from LaTeX run
     "aux", "log", "toc"
   },
+  page_formats = {
+    ebook = {paperwidth="1200px", paperheight = "1800px", margin = "5mm"}
+  }
 }
 
 local lapp = require "lapp-mk4"
@@ -33,16 +36,18 @@ local tmpfiles = require "rmodepdf-tmpfiles"
 
 local msg = [[
 Usage: rmodepdf [options] url
--b,--baseurl                Base URL used when the HTML content is read from the standard input
--h,--help                   Print help message
--i,--imgdir   (default "")  Download images and save them to the specified directory
--n,--noimages               Don't download images
--N,--nomathjax              Don't process LaTeX commands in the HTML document
--t,--template (default "")  LaTeX template
--o,--output   (default "")  Output file name
--p,--print                  Print the converted LaTeX source
--v,--version                Print version
-<url>         (string)
+-b,--baseurl                     Base URL used when the HTML content is read from the standard input
+-h,--help                        Print help message
+-i,--imgdir      (default "")    Download images and save them to the specified directory
+-n,--noimages                    Don't download images
+-N,--nomathjax                   Don't process LaTeX commands in the HTML document
+-t,--template    (default "")    LaTeX template
+-o,--output      (default "")    Output file name
+-p,--pageformat  (default ebook) Page format 
+-s,--pagestyle   (default empty) \pagestyle for the document
+-p,--print                       Print the converted LaTeX source
+-v,--version                     Print version
+<url>            (string)
 ]]
  -- <urladdress>  (string)      URL to be processed
 
@@ -105,7 +110,8 @@ local template = [[
 \usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec}
 \usepackage[@{lang}]{babel}
 \setmainfont{Literata}
-
+\usepackage[@{geometry}]{geometry}
+\pagestyle{@{pagestyle}}
 
 \begin{document}
 %s
@@ -152,6 +158,8 @@ if not args.nomathjax then
   local allowed_commands = config.html_latex.allowed_commands
   mathjax.process_latex(dom, ignored, allowed_commands)
 end
+
+htmllib.set_page_dimensions(dom, args.pageformat, args.pagestyle)
 
 htmlprocess.add_action("html", template)
 
