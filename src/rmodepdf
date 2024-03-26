@@ -17,11 +17,15 @@ config = {
 }
 
 local lapp = require "lapp-mk4"
+logging = require "make4ht-logging"
 local htmllib = require "rmodepdf-htmllib"
 local htmlprocess = require "rmodepdf-htmltemplates"
 local domobject = require "luaxml-domobject"
 local encodings = require "luaxml-encodings"
 local mathjax = require "rmodepdf-mathjax"
+local compile = require "rmodepdf-compile"
+local tmpfiles = require "rmodepdf-tmpfiles"
+
 
 
 local msg = [[
@@ -121,7 +125,9 @@ if not output then
 end
 
 if args.output and args.output~='""' then
-  output = args.output
+  -- if the output file name is specified at the command line, remove the .pdf extension, 
+  -- as it is used as the --jobname option lualatex
+  output = args.output:gsub(".pdf$", "")
 end
 
 local f = io.open(tmpfile, "r")
@@ -150,6 +156,6 @@ local processed = htmlprocess.process_dom(dom)
 if args.print then
   print(processed)
 else 
-  print(output)
+  compile.compile(processed, output)
 end
 os.remove(tmpfile)
