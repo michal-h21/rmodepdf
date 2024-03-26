@@ -18,7 +18,7 @@ config = {
     "aux", "log", "toc"
   },
   page_formats = {
-    ebook = {paperwidth="1200px", paperheight = "1800px", margin = "5mm"}
+    ebook = {paperwidth="116mm", paperheight = "182mm", margin = "5mm"}
   }
 }
 
