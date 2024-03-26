@@ -13,7 +13,10 @@ config = {
   html_latex = { -- support for LaTeX math in webpages that use MathJax or KaTeX
     ignored = {"pre", "code"}, -- html elements which shouldn't be processed for LaTeX commands
     allowed_commands = {"ref", "pageref", "cleveref", "nameref"}
-  }
+  },
+  aux_files = {-- extensions of auxilary files from LaTeX run
+    "aux", "log", "toc"
+  },
 }
 
 local lapp = require "lapp-mk4"
