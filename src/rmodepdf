@@ -3,11 +3,16 @@
 kpse.set_program_name "luatex"
 
 config = {
-  img_convert = {
+  img_convert = { -- configure convertors from image formats not supported by LuaTeX
     -- all supported commands should read data from stdin
     svg = "cairosvg -o ${dest} -",
     webp = "magick WEBP:- ${dest}", 
     gif = "magick GIF:-[0,0] ${dest}", -- [0,0] should select the first frame from animated GIF
+  },
+
+  html_latex = { -- support for LaTeX math in webpages that use MathJax or KaTeX
+    ignored = {"pre", "code"}, -- html elements which shouldn't be processed for LaTeX commands
+    allowed_commands = {"ref", "pageref", "cleveref", "nameref"}
   }
 }
 
@@ -25,6 +30,7 @@ Usage: rmodepdf [options] url
 -h,--help                   Print help message
 -i,--imgdir   (default img) Download images and save them to the specified directory
 -n,--noimages               Don't download images
+-N,--nomathjax              Don't process LaTeX commands in the HTML document
 -t,--template (default "")  LaTeX template
 -o,--output   (default "")  Output file name
 -p,--print                  Print the converted LaTeX source
@@ -108,9 +114,6 @@ if args.template and args.template~="" then
 end
 
 local tmpfile, metadata = htmllib.readability(content, baseurl)
-for k,v in pairs(metadata) do
-  print(k,v)
-end
 
 local output = htmllib.clean_title(metadata.Title)
 if not output then 
@@ -133,10 +136,14 @@ else
   for _, el in ipairs(dom:query_selector("img")) do el:remove_node() end
 end
 
--- keep inline LaTeX code, for example MathJax content
-local ignored = {"pre", "code"}
-local allowed_commands = {"ref", "pageref", "cleveref", "nameref"}
-mathjax.process_latex(dom, ignored, allowed_commands)
+if not args.nomathjax then
+  -- process text nodes for LaTeX commands. This should support pages that use MathJax to render math
+  -- keep inline LaTeX code, for example MathJax content
+  local ignored = config.html_latex.ignored
+  local allowed_commands = config.html_latex.allowed_commands
+  mathjax.process_latex(dom, ignored, allowed_commands)
+end
+
 htmlprocess.add_action("html", template)
 
 local processed = htmlprocess.process_dom(dom)
