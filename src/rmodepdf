@@ -32,7 +32,7 @@ local msg = [[
 Usage: rmodepdf [options] url
 -b,--baseurl                Base URL used when the HTML content is read from the standard input
 -h,--help                   Print help message
--i,--imgdir   (default img) Download images and save them to the specified directory
+-i,--imgdir   (default "")  Download images and save them to the specified directory
 -n,--noimages               Don't download images
 -N,--nomathjax              Don't process LaTeX commands in the HTML document
 -t,--template (default "")  LaTeX template
@@ -92,8 +92,8 @@ if enc then
 end
 
 -- 
-local imgdir = "img"
-if args.imgdir and args.imgdir~="" then
+local imgdir = ""
+if args.imgdir and args.imgdir~='""' then
   imgdir = args.imgdir
 end
 
@@ -109,7 +109,7 @@ local template = [[
 \end{document}
 ]]
 
-if args.template and args.template~="" then
+if args.template and args.template~='""' then
   local f = io.open(args.template, "r")
   if f then
     template = f:read("*all")
@@ -153,9 +153,11 @@ end
 htmlprocess.add_action("html", template)
 
 local processed = htmlprocess.process_dom(dom)
+
 if args.print then
   print(processed)
 else 
   compile.compile(processed, output)
 end
-os.remove(tmpfile)
+
+tmpfiles.clean()
