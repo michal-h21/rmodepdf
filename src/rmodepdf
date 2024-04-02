@@ -114,6 +114,7 @@ end
 local template = [[
 \documentclass{article}
 \usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec,microtype}
+\usepackage[export]{adjustbox}
 \usepackage[@{lang}]{babel}
 \setmainfont{Literata}
 \usepackage[@{geometry}]{geometry}

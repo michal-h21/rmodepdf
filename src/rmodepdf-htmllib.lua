@@ -155,6 +155,19 @@ local function hash_img_name(imgdir, url, mimetype)
   return imgname
 end
 
+local function get_bouding_box(imgname)
+  local function calculate(lower, higher)
+    return tonumber(higher) - tonumber(lower)
+  end
+  local ebb, msg = io.popen("ebb -x -O " .. imgname, "r")
+  if not ebb then return nil, msg end
+  local result = ebb:read("*all")
+  ebb:close()
+  local x, y, w, h = result:match("%%BoundingBox: (%d+) (%d+) (%d+) (%d+)")
+  if not x then return nil, "Cannot read image dimensions: " .. imgname end 
+  return calculate(x, w), calculate(y,h)
+end
+
 local function download_images(dom, imgdir)
   local images = dom:query_selector("img")
   -- stop process if the page doesn't contain any images
@@ -195,6 +208,16 @@ local function download_images(dom, imgdir)
           end
         end
         img:set_attribute("src", newname)
+        -- I am not using this, because LuaTeX reads image dimensions directly, and I've even found a way how
+        -- to set the max-width, to prevent image width larger than the \textwidth
+        -- local width, height = get_bouding_box(newname)
+        -- if not width then
+        --   -- height contains error message
+        --   log:error(height)
+        -- else
+        --   if not img:get_attribute("width") then img:set_attribute("width", width) end
+        --   if not img:get_attribute("height") then img:set_attribute("height", height) end
+        -- end
       else
         -- remove unsupported images
         img:remove_node()

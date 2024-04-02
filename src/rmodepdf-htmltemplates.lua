@@ -12,7 +12,7 @@ xmltransform.add_action("head", [[
 xmltransform.add_action("meta", [[\textbf{@{name}} & @{content}\\ ]])
 xmltransform.add_action("meta[name='author']", [[\textbf{@{name}} & \textbf{@{content}}\\ ]])
 xmltransform.add_action("title", [[\textbf{title} & %s\\ ]])
-xmltransform.add_action("img", [[\includegraphics[width=\textwidth]{@{src}}]])
+xmltransform.add_action("img", [[\noindent\includegraphics[max width=\textwidth]{@{src}}]])
 
 xmltransform.add_action("h1", [[\addcontentsline{toc}{section}{%s}\section*{%s}
 ]])
