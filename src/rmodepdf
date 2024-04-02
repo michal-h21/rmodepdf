@@ -125,6 +125,14 @@ local template = [[
 \end{document}
 ]]
 
+-- if we get multiple HTML files to process, the others than the first file will be processed using 
+-- this template
+local multi_template = [[
+\clearpage
+\selectlanguage{@{lang}}
+%s
+]]
+
 if args.template and args.template~='""' then
   local f = io.open(args.template, "r")
   if f then
@@ -133,9 +141,32 @@ if args.template and args.template~='""' then
   end
 end
 
-local tmpfile, metadata = htmllib.readability(content, baseurl)
+local function prepare_file(content, baseurl)
+  local tmpfile, metadata = htmllib.readability(content, baseurl)
+  local output = htmllib.clean_title(metadata.Title)
+  local f = io.open(tmpfile, "r")
+  local content = f:read("*all")
+  f:close()
+  local dom = domobject.html_parse(content)
+  if not args.noimages then
+    content = htmllib.download_images(dom, imgdir)
+  else
+    -- remove images with the --noimages command line option
+    for _, el in ipairs(dom:query_selector("img")) do el:remove_node() end
+  end
+  if not args.nomathjax then
+    -- process text nodes for LaTeX commands. This should support pages that use MathJax to render math
+    -- keep inline LaTeX code, for example MathJax content
+    local ignored = config.html_latex.ignored
+    local allowed_commands = config.html_latex.allowed_commands
+    mathjax.process_latex(dom, ignored, allowed_commands)
+  end
+  return dom, output
 
-local output = htmllib.clean_title(metadata.Title)
+end
+
+local dom, output = prepare_file(content, baseurl)
+
 if not output then 
   output = "rmodepdf-" .. os.date("%Y%m%d-%H-%M")
 end
@@ -146,31 +177,34 @@ if args.output and args.output~='""' then
   output = args.output:gsub(".pdf$", "")
 end
 
-local f = io.open(tmpfile, "r")
-local content = f:read("*all")
-f:close()
-local dom = domobject.html_parse(content)
 
-if not args.noimages then
-  content = htmllib.download_images(dom, imgdir)
-else
-  -- remove images with the --noimages command line option
-  for _, el in ipairs(dom:query_selector("img")) do el:remove_node() end
-end
 
-if not args.nomathjax then
-  -- process text nodes for LaTeX commands. This should support pages that use MathJax to render math
-  -- keep inline LaTeX code, for example MathJax content
-  local ignored = config.html_latex.ignored
-  local allowed_commands = config.html_latex.allowed_commands
-  mathjax.process_latex(dom, ignored, allowed_commands)
-end
 
 htmllib.set_page_dimensions(dom, args.pageformat, args.pagestyle)
 
 htmlprocess.add_action("html", template)
 
 local processed = htmlprocess.process_dom(dom)
+
+-- if we get multiple urls, we will process them all
+if #args > 0 then
+  -- we must use different template than for the first file, because the default template produces full
+  -- LaTeX document, including \end{document}
+  htmlprocess.add_action("html[lang]", multi_template)
+  local new_processed = {}
+  for _, url in ipairs(args) do
+    local content, err_msg = htmllib.curl(url)
+    if not content then
+      log:error("Cannot load url: "  .. url)
+      log:error(err_msg)
+    else
+      local dom = prepare_file(content, url)
+      new_processed[#new_processed+1] = htmlprocess.process_dom(dom)
+    end
+  end
+  -- place the newly procesed before \end{document} of the original processed file
+  processed = processed:gsub("\\end{document}%s*$", table.concat(new_processed, "\n\n")).."\n\n\\end{document}"
+end
 
 if args.print then
   print(processed)
