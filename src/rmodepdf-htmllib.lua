@@ -16,7 +16,7 @@ end
 local function curl(url)
   local status, mimetype = get_mimetype(url)
   if status > 400 then return nil, "Cannot open url: " .. url end
-  log:debug("curl", status, mimetype)
+  log:debug("curl", url, status, mimetype)
   local command = io.popen("curl --compressed -A 'Mozilla/5.0 rdrview/0.1' -sS '".. url.. "'","r")
   if not command then return nil, "Cannot execute curl" end
   local content = command:read("*all")
