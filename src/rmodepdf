@@ -17,6 +17,7 @@ config = {
   aux_files = {-- extensions of auxilary files from LaTeX run
     "aux", "log", "toc"
   },
+  max_runs = 3, -- maximum number of compilations
   page_formats = {
     ebook = {paperwidth="116mm", paperheight = "182mm", margin = "5mm"}
   }
