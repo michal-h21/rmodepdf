@@ -5,7 +5,7 @@ BIN_DIR = $(HOME)/.local/bin
 SYSTEM_DIR = $(realpath $(BIN_DIR))
 EXECUTABLE = $(SYSTEM_DIR)/$(name)
 
-# use sudo for install to destination directory outise home
+# use sudo for install to destination directory outside home
 ifeq ($(findstring home,$(SYSTEM_DIR)),home)
 	SUDO:=
 else
