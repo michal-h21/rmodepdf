@@ -98,14 +98,6 @@ else
 end
 
 
-local enc = encodings.find_html_encoding(content)
-if enc then
-  local mapping = encodings.load_mapping(enc)
-  if mapping then
-    content = encodings.recode(content, mapping)
-  end
-end
-
 -- 
 local imgdir = ""
 if args.imgdir and args.imgdir~='""' then
@@ -143,6 +135,14 @@ if args.template and args.template~='""' then
 end
 
 local function prepare_file(content, baseurl)
+  local enc = encodings.find_html_encoding(content)
+  if enc then
+    local mapping = encodings.load_mapping(enc)
+    if mapping then
+      content = encodings.recode(content, mapping)
+    end
+  end
+
   local tmpfile, metadata = htmllib.readability(content, baseurl)
   local output = htmllib.clean_title(metadata.Title)
   local f = io.open(tmpfile, "r")
