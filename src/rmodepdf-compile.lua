@@ -1,4 +1,5 @@
 
+local log = logging.new "compile"
 local tmpfiles = require "rmodepdf-tmpfiles"
 -- this library provides log parsing function
 local error_logparser = require "make4ht-errorlogparser"
@@ -26,7 +27,7 @@ end
 
 local function compile(content, jobname)
   local res = run_latex(content, jobname)
-  print("res: " .. res[3])
+  log:debug("res: " .. res[3])
   for _, ext in ipairs(config.aux_files) do
     tmpfiles.register_tmpname(jobname .. "." .. ext)
   end

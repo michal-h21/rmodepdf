@@ -1,6 +1,7 @@
 local domobject = require "luaxml-domobject"
 local languages = require "rmodepdf-languages"
 local tmpfiles  = require "rmodepdf-tmpfiles"
+local log = logging.new "htmllib"
 
 local function get_mimetype(url)
   local command = io.popen("curl -s -I '" .. url .. "'","r")
@@ -15,7 +16,7 @@ end
 local function curl(url)
   local status, mimetype = get_mimetype(url)
   if status > 400 then return nil, "Cannot open url: " .. url end
-  print("jsme tu", status, mimetype)
+  log:debug("curl", status, mimetype)
   local command = io.popen("curl --compressed -A 'Mozilla/5.0 rdrview/0.1' -sS '".. url.. "'","r")
   if not command then return nil, "Cannot execute curl" end
   local content = command:read("*all")
@@ -135,7 +136,7 @@ local mime_to_ext = {
 
 local function hash_img_name(imgdir, url, mimetype)
   -- normalize imgdir
-  print("imgdir: " .. imgdir .. ";")
+  log:debug("imgdir: " .. imgdir .. ";")
   if imgdir == '""' or imgdir == "" then 
     imgdir = "" 
   else
@@ -150,7 +151,7 @@ local function hash_img_name(imgdir, url, mimetype)
     -- if user didn't specify the img dir, we will remove all images
     tmpfiles.register_tmpname(imgname)
   end
-  print("new image name: " .. imgname)
+  log:debug("new image name: " .. imgname)
   return imgname
 end
 
@@ -200,7 +201,7 @@ local function download_images(dom, imgdir)
       end
     else
       -- remove images that cannot be downloaded
-      print("% Cannot download image: " .. src)
+      log:warning("% Cannot download image: " .. src)
       img:remove_node()
     end
   end

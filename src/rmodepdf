@@ -32,21 +32,24 @@ local mathjax = require "rmodepdf-mathjax"
 local compile = require "rmodepdf-compile"
 local tmpfiles = require "rmodepdf-tmpfiles"
 
+local log = logging.new "rmodepdf"
 
 
 local msg = [[
 Usage: rmodepdf [options] url
--b,--baseurl                     Base URL used when the HTML content is read from the standard input
--h,--help                        Print help message
--i,--imgdir      (default "")    Download images and save them to the specified directory
--n,--noimages                    Don't download images
--N,--nomathjax                   Don't process LaTeX commands in the HTML document
--t,--template    (default "")    LaTeX template
--o,--output      (default "")    Output file name
--p,--pageformat  (default ebook) Page format 
--s,--pagestyle   (default empty) \pagestyle for the document
--p,--print                       Print the converted LaTeX source
--v,--version                     Print version
+-b,--baseurl                       Base URL used when the HTML content is read from the standard input
+-h,--help                          Print help message
+-i,--imgdir      (default "")      Download images and save them to the specified directory
+-l,--loglevel    (default status)  Set log level
+                                   possible values: debug, info, status, warning, error, fatal
+-n,--noimages                      Don't download images
+-N,--nomathjax                     Don't process LaTeX commands in the HTML document
+-t,--template    (default "")      LaTeX template
+-o,--output      (default "")      Output file name
+-p,--pageformat  (default ebook)   Page format 
+-s,--pagestyle   (default empty)   \pagestyle for the document
+-p,--print                         Print the converted LaTeX source
+-v,--version                       Print version
 <url>            (string)
 ]]
  -- <urladdress>  (string)      URL to be processed
@@ -56,8 +59,11 @@ local args = lapp(msg)
 -- make the command line arguments available in global config
 config.args = args
 
+-- set logging level
+logging.set_level(args.loglevel)
+
 local function help(err)
-  if err then print(err) end
+  if err then log:error(err) end
   print(msg) 
   os.exit()
 end
@@ -169,6 +175,7 @@ if args.print then
   print(processed)
 else 
   compile.compile(processed, output)
+  log:status("File saved as: " .. output .. ".pdf")
 end
 
 tmpfiles.clean()

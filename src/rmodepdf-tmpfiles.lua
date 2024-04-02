@@ -1,4 +1,5 @@
 
+local log = logging.new "tmpfiles"
 local tmpfiles = {}
 
 local function register_tmpname(name)
@@ -16,7 +17,7 @@ end
 local function clean()
   -- remove all registered tmp files
   for _, name in ipairs(tmpfiles) do
-    print("removing", name)
+    log:debug("removing tmp file: ", name)
     os.remove(name)
   end
 end
