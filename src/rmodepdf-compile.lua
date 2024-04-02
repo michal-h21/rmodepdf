@@ -32,11 +32,13 @@ end
 local function compare_hashes(jobname, extensions)
   local changed = false
   for _, ext in ipairs(extensions) do
-    local filename = jobname .. "." .. ext
-    local hash = get_hash(filename)
-    log:debug("filename hash", filename, hash)
-    if hashes[filename] ~= hash then changed = true end
-    hashes[filename] = hash
+    if ext ~= "log" then
+      local filename = jobname .. "." .. ext
+      local hash = get_hash(filename)
+      log:debug("filename hash", filename, hash, hashes[filename])
+      if hashes[filename] ~= hash then changed = true end
+      hashes[filename] = hash
+    end
   end
   return changed
 end
