@@ -3,7 +3,65 @@ local languages = require "rmodepdf-languages"
 local tmpfiles  = require "rmodepdf-tmpfiles"
 local log = logging.new "htmllib"
 
+local function array_to_hash(t) 
+  local n = {}
+  for k,v in ipairs(t) do n[v] = true end
+  return n
+end
+
+local allowed_url_prefixes = array_to_hash(config.allowed_url_prefixes)
+
+local function file_exists(file)
+  local f = io.open(file, "rb")
+  if f then f:close() end
+  return f ~= nil
+end
+
+local function is_url(url)
+  local prefix = url:match("^([^%:]+):")
+  if not prefix then return false end
+  return allowed_url_prefixes[prefix]
+end
+
+local function load_file(url)
+  local f = io.open(url, "r")
+  if not f then
+    log:error("Cannot open file: " .. url)
+    return nil, "Cannot open file: " .. url
+  end
+  log:debug("Loading file: " .. url)
+  local content = f:read("*all")
+  f:close()
+  return content
+end
+
+local mime_to_ext = config.mime_to_ext
+
+-- mimetypes of local images
+local local_mimetypes = {
+ png  = "image/png",
+ jpg  = "image/jpeg",
+ jpeg  = "image/jpeg",
+ svg  = "image/svg+xml",
+ gif  = "image/gif",
+ webp  = "image/webp",
+}
+
+local function local_mimetype(url)
+  -- try to emulate status and mimetype for local files
+  if not file_exists(url) then
+    return 404, "File not exists: " .. url 
+  end
+  local status = 200
+  local extension = url:match("%.(%w+)")
+  if not extension then return 404, "Cannot find mimetype for extension: " .. extension end
+  local mimetype = local_mimetypes[string.lower(extension)]
+  if not mimetype then status = 404; mimetype = "Cannot find mimetype for extension: " .. extension end 
+  return status, mimetype
+end
+
 local function get_mimetype(url)
+  if not is_url(url) then return local_mimetype(url) end
   local command = io.popen("curl -s -I '" .. url .. "'","r")
   local content = command:read("*all")
   command:close()
@@ -14,6 +72,7 @@ end
 
 -- download content of URL
 local function curl(url)
+  if not is_url(url) then return load_file(url) end
   local status, mimetype = get_mimetype(url)
   if status > 400 then return nil, "Cannot open url: " .. url end
   log:debug("curl", url, status, mimetype)
@@ -80,10 +139,7 @@ local function html_skeleton(tmpfile, metadata)
     end)
 
   end
-  local f = io.open(tmpfile, "r")
-  local content = f:read("*all")
-  metadata.content = content -- make content available in the template
-  f:close()
+  metadata.content = load_file(tmpfile) -- make content available in the metadata
   -- insert metadata and html to the template and update the tmpfile
   local newcontent = expand(htmltemplate, metadata)
   f = io.open(tmpfile, "w")
@@ -126,13 +182,6 @@ local function tidy(tmpfile)
 end
 
 
-local mime_to_ext = {
-  ["image/png"] = {ext = "png"},
-  ["image/jpeg"] = {ext = "jpg"},
-  ["image/svg+xml"] = {ext = "pdf", convert = config.img_convert.svg},
-  ["image/gif"] = {ext = "png", convert = config.img_convert.gif},
-  ["image/webp"] = {ext = "png", convert = config.img_convert.webp},
-}
 
 local function hash_img_name(imgdir, url, mimetype)
   -- normalize imgdir
@@ -179,6 +228,7 @@ local function download_images(dom, imgdir)
   for _, img in ipairs(images) do
     local src = img:get_attribute("src")
     local status, mimetype = get_mimetype(src)
+    log:debug("image mimetype", status, mimetype)
     -- process only accessible images
     if status == 200 then
       -- we want to hash image names, in order to save them to the destination directory
@@ -268,6 +318,7 @@ local function set_page_dimensions(dom, format, pagestyle)
 end
 
 return {
+  load_file = load_file,
   curl = curl,
   readability = readability,
   tidy = tidy,

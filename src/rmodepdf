@@ -20,7 +20,16 @@ config = {
   max_runs = 3, -- maximum number of compilations
   page_formats = {
     ebook = {paperwidth="116mm", paperheight = "182mm", margin = "5mm"}
-  }
+  },
+  allowed_url_prefixes = {"http", "https", "ftp"},
+}
+--- we must add  this configuration separatelly, because we already use other 
+config.mime_to_ext = {
+    ["image/png"] = {ext = "png"},
+    ["image/jpeg"] = {ext = "jpg"},
+    ["image/svg+xml"] = {ext = "pdf", convert = config.img_convert.svg},
+    ["image/gif"] = {ext = "png", convert = config.img_convert.gif},
+    ["image/webp"] = {ext = "png", convert = config.img_convert.webp},
 }
 
 local lapp = require "lapp-mk4"
