@@ -47,7 +47,8 @@ local log = logging.new "rmodepdf"
 
 local msg = [[
 Usage: rmodepdf [options] url
--b,--baseurl                       Base URL used when the HTML content is read from the standard input
+-b,--baseurl     (default "")      Base URL used when the HTML content is read from the standard input
+-c,--configfile  (default "")      Filename of Lua configuration file
 -h,--help                          Print help message
 -i,--imgdir      (default "")      Download images and save them to the specified directory
 -l,--loglevel    (default status)  Set log level
@@ -102,7 +103,7 @@ if url and url ~= "" and url ~= "-" then
 else
   -- read content from stdin
   -- we must use baseurl with stdin
-  if not args.baseurl or args.baseurl == "" then help("Missing baseurl") end
+  if not args.baseurl or args.baseurl == '""' then help("Missing baseurl") end
   content = io.read("*all")
 end
 
@@ -140,6 +141,20 @@ if args.template and args.template~='""' then
   if f then
     template = f:read("*all")
     f:close()
+  end
+end
+
+if args.configfile and args.configfile~='""'  then
+  if htmllib.file_exists(args.configfile) then
+    log:debug("Loading configfile: " .. args.configfile)
+    local script, msg = loadfile(args.configfile)
+    if not script then
+      log:error("Config file parsing error: " .. msg)
+    else
+      script()
+    end
+  else
+    log:error("Cannot find configfile: " .. args.configfile)
   end
 end
 
