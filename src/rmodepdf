@@ -35,7 +35,8 @@ config.mime_to_ext = {
 local lapp = require "lapp-mk4"
 logging = require "make4ht-logging"
 local htmllib = require "rmodepdf-htmllib"
-local htmlprocess = require "rmodepdf-htmltemplates"
+-- htmlprocess needs to be global, to be available in config files
+htmlprocess = require "rmodepdf-htmltemplates"
 local domobject = require "luaxml-domobject"
 local encodings = require "luaxml-encodings"
 local mathjax = require "rmodepdf-mathjax"
@@ -114,7 +115,7 @@ if args.imgdir and args.imgdir~='""' then
   imgdir = args.imgdir
 end
 
-local template = [[
+template = [[
 \documentclass{article}
 \usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec,microtype}
 \usepackage[export]{adjustbox}
@@ -142,6 +143,12 @@ if args.template and args.template~='""' then
     template = f:read("*all")
     f:close()
   end
+end
+
+-- some functions that can be redefined in the config file
+
+function postprocess_dom(dom)
+  return dom
 end
 
 if args.configfile and args.configfile~='""'  then
@@ -186,6 +193,8 @@ local function prepare_file(content, baseurl)
     local allowed_commands = config.html_latex.allowed_commands
     mathjax.process_latex(dom, ignored, allowed_commands)
   end
+  config.current_url = baseurl
+  dom = postprocess_dom(dom)
   return dom, output
 
 end
