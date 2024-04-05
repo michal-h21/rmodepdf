@@ -1,6 +1,7 @@
 
 local log = logging.new "compile"
 local tmpfiles = require "rmodepdf-tmpfiles"
+local htmllib  = require "rmodepdf-htmllib"
 -- this library provides log parsing function
 local error_logparser = require "make4ht-errorlogparser"
 
@@ -57,6 +58,11 @@ local function compile(content, jobname, run_count)
   elseif  res[3] > 0 then
     log:error("Compilation error")
     log:error("Status code: " .. res[3])
+    local logfile = htmllib.load_file(jobname .. ".log")
+    local errors, chunks = error_logparser.parse(logfile)
+    for k,v in ipairs(errors) do
+      log:error(v.error)
+    end
     return nil, "Non-zero status code from the compilation"
   end
   log:debug("res: " .. res[3])
