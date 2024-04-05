@@ -325,4 +325,5 @@ return {
   download_images = download_images,
   clean_title = clean_title,
   set_page_dimensions=set_page_dimensions,
+  file_exists = file_exists,
 }
