@@ -147,7 +147,7 @@ end
 
 -- some functions that can be redefined in the config file
 
-function postprocess_dom(dom)
+function postprocess_dom(dom, content)
   return dom
 end
 
@@ -181,7 +181,7 @@ local function prepare_file(content, baseurl)
   f:close()
   local dom = domobject.html_parse(content)
   if not args.noimages then
-    content = htmllib.download_images(dom, imgdir)
+    dom = htmllib.download_images(dom, imgdir)
   else
     -- remove images with the --noimages command line option
     for _, el in ipairs(dom:query_selector("img")) do el:remove_node() end
@@ -194,7 +194,7 @@ local function prepare_file(content, baseurl)
     mathjax.process_latex(dom, ignored, allowed_commands)
   end
   config.current_url = baseurl
-  dom = postprocess_dom(dom)
+  dom = postprocess_dom(dom, content)
   return dom, output
 
 end
