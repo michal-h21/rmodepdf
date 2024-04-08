@@ -146,6 +146,10 @@ if args.template and args.template~='""' then
 end
 
 -- some functions that can be redefined in the config file
+--
+function preprocess_dom(dom,content)
+  return dom
+end
 
 function postprocess_dom(dom, content)
   return dom
@@ -180,6 +184,7 @@ local function prepare_file(content, baseurl)
   local content = f:read("*all")
   f:close()
   local dom = domobject.html_parse(content)
+  dom = preprocess_dom(dom, content)
   if not args.noimages then
     dom = htmllib.download_images(dom, imgdir)
   else
