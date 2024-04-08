@@ -1,0 +1,115 @@
+\documentclass{article}
+\newcommand\authormail[1]{\footnote{\textless\url{#1}\textgreater}}
+\ifdefined\HCode
+  \renewcommand\authormail[1]{\space\textless\Link[#1]{}{}#1\EndLink\textgreater}
+\fi
+
+\usepackage{longtable}
+\usepackage{tabularx}
+\newenvironment{changelog}{\longtable{@{} l p{30em}}}{\endlongtable}
+\newcommand\change[2]{#1 & #2\\}
+
+\author{Michal Hoftich\authormail{michal.h21@gmail.com}}
+\ifdefined\gitdate\else
+  \def\gitdate{\today}
+  \def\version{devel}
+\fi
+\title{\texttt{Rmodepdf} -- convert web pages to PDF using \LaTeX}
+\date{Version \version, \gitdate}
+\usepackage{upquote}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{fontspec}
+\usepackage{linebreaker}
+\setmainfont{Linux Libertine O}
+\usepackage{luacode}
+\begin{document}
+\maketitle
+\begin{tabular}{l l}
+  Homepage: &\url{https://www.kodymirus.cz/texblend/}\\
+  Issue tracker:&  \url{https://github.com/michal-h21/texblend}
+\end{tabular}
+\tableofcontents
+
+\section{Introduction}
+
+This utility converts text content of web pages to PDF using LaTeX. The text
+content is extracted using \textit{rdrview}\footnote{\url{https://github.com/eafer/rdrview}}, utility that provides a port of Firefox's reader
+view functionality. This means that it strips away clutter like buttons, ads, background images, and videos, leaving only the article text. 
+
+It doesn't support any CSS or JavaScript, only plain HTML.
+The main purpose is to create version of longer articles suitable for reading
+on e-readers, tablets and phones. Another possible usage is for printing of web pages.
+
+
+\section{Usage}
+
+The basic usage is following:
+
+\begin{verbatim}
+$ rmodepdf <url>
+\end{verbatim}
+
+If the compilation goes well, Rmodepdf should print a message like:
+
+\begin{verbatim}
+[STATUS]  rmodepdf: File saved as: Page_Title.pdf
+\end{verbatim}
+
+File name of the PDF name is based on the web page title. You can choose
+a different filename using the \verb|-o| option:
+
+\begin{verbatim}
+$ rmodepdf -o sample <url>
+\end{verbatim}
+
+You can also compile several web pages at once, Rmodepdf will convert all URLs
+passed as argument as one PDF, with the filename based on the first page's title:
+
+\begin{verbatim}
+$ rmodepdf <url1> <url2> <url3>
+\end{verbatim}
+
+Instead of URLs, you can also pass filenames of local files.
+
+
+
+
+
+
+\subsection{Command Line Options}
+
+\begin{verbatim}
+-b,--baseurl     (default "")      Base URL used when the HTML content is read
+                                   from the standard input
+-c,--configfile  (default "")      Filename of Lua configuration file
+-h,--help                          Print help message
+-i,--imgdir      (default "")      Download images and save them to the
+                                   specified directory
+-l,--loglevel    (default status)  Set log level
+                                   possible values: debug, info, status,
+                                   warning, error, fatal
+-n,--noimages                      Don't download images
+-N,--nomathjax                     Don't process LaTeX commands in the HTML
+                                   document
+-t,--template    (default "")      LaTeX template
+-o,--output      (default "")      Output file name
+-p,--pageformat  (default ebook)   Page format 
+-s,--pagestyle   (default empty)   \pagestyle for the document
+-p,--print                         Print the converted LaTeX source
+-v,--version                       Print version
+<url>            (string)
+\end{verbatim}
+
+\section{License}
+
+Permission is granted to copy, distribute and/or modify this software
+under the terms of the \LaTeX\ Project Public License, version 1.3.
+
+\section{Changelog}
+\begin{changelog}
+  \change{2023-11-24}{Initial release}
+\end{changelog}
+
+\end{document}
+
