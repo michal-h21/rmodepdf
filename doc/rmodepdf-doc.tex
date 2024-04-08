@@ -70,7 +70,12 @@ passed as argument as one PDF, with the filename based on the first page's title
 $ rmodepdf <url1> <url2> <url3>
 \end{verbatim}
 
-Instead of URLs, you can also pass filenames of local files.
+Instead of URLs, you can also pass filenames of local files or pass the HTML code from the 
+standard input with the \verb|-| option:
+
+\begin{verbatim}
+$ rmodepdf - < localfile.html
+\end{verbatim}
 
 
 
