@@ -1,0 +1,151 @@
+<!DOCTYPE html> 
+<html lang='en-US' xml:lang='en-US'> 
+<head><title>Rmodepdf – convert web pages to PDF using LaTeX</title> 
+<meta charset='utf-8' /> 
+<meta content='TeX4ht (https://tug.org/tex4ht/)' name='generator' /> 
+<meta content='width=device-width,initial-scale=1' name='viewport' /> 
+<link href='index.css' rel='stylesheet' type='text/css' /> 
+<meta content='index.tex' name='src' /> 
+</head><body>
+<div class='maketitle'>
+                                                                  
+
+                                                                  
+                                                                  
+
+                                                                  
+
+<h2 class='titleHead'>Rmodepdf – convert web pages to PDF using
+LaTeX</h2>
+ <div class='author'><span class='ec-lmr-12'>Michal Hoftich &lt;</span><a href='michal.h21@gmail.com'><span class='ec-lmr-12'>michal.h21@gmail.com</span></a><span class='ec-lmr-12'>&gt;</span></div><br />
+<div class='date'><span class='ec-lmr-12'>Version devel, April 9, 2024</span></div>
+</div><!-- tex4ht:inline --><div class='tabular'> <table class='tabular' id='TBL-2'><colgroup id='TBL-2-1g'><col id='TBL-2-1' /><col id='TBL-2-2' /></colgroup><tr id='TBL-2-1-' style='vertical-align:baseline;'><td class='td11' id='TBL-2-1-1' style='white-space:nowrap; text-align:left;'> Homepage:    </td><td class='td11' id='TBL-2-1-2' style='white-space:nowrap; text-align:left;'> <a class='url' href='https://www.kodymirus.cz/texblend/'><span class='ec-lmtt-10'>https://www.kodymirus.cz/texblend/</span></a>     </td>
+</tr><tr id='TBL-2-2-' style='vertical-align:baseline;'><td class='td11' id='TBL-2-2-1' style='white-space:nowrap; text-align:left;'> Issue tracker:  </td><td class='td11' id='TBL-2-2-2' style='white-space:nowrap; text-align:left;'> <a class='url' href='https://github.com/michal-h21/texblend'><span class='ec-lmtt-10'>https://github.com/michal-h21/texblend</span></a> </td></tr></table>     </div>
+<h3 class='likesectionHead' id='contents'><a id='x1-1000'></a>Contents</h3>
+<div class='tableofcontents'>   
+<span class='sectionToc'>1 <a href='#introduction' id='QQ2-1-2'>Introduction</a></span>
+<br />   <span class='sectionToc'>2 <a href='#usage' id='QQ2-1-3'>Usage</a></span>
+<br />   <span class='subsectionToc'>2.1 <a href='#command-line-options' id='QQ2-1-4'>Command Line Options</a></span>
+<br />   <span class='sectionToc'>3 <a href='#license' id='QQ2-1-5'>License</a></span>
+<br />   <span class='sectionToc'>4 <a href='#changelog' id='QQ2-1-6'>Changelog</a></span>
+</div>
+<!-- l. 34 --><p class='noindent'>
+</p>   
+<h3 class='sectionHead' id='introduction'><span class='titlemark'>1   </span> <a id='x1-20001'></a>Introduction</h3>
+<!-- l. 36 --><p class='noindent'>This utility converts text content of web pages to PDF using LaTeX. The text content is extracted
+using <i>rdrview</i><span class='footnote-mark'><a href='#fn1x0' id='fn1x0-bk'><sup class='textsuperscript'>1</sup></a></span><a id='x1-2001f1'></a>,
+utility that provides a port of Firefox’s reader view functionality. This means that it
+strips away clutter like buttons, ads, background images, and videos, leaving only the
+article text.
+</p><!-- l. 40 --><p class='indent'>   It doesn’t support any CSS or JavaScript, only plain HTML. The main purpose is
+to create version of longer articles suitable for reading on e-readers, tablets and
+phones. Another possible usage is for printing of web pages.
+                                                                  
+
+                                                                  
+</p><!-- l. 45 --><p class='noindent'>
+</p>   
+<h3 class='sectionHead' id='usage'><span class='titlemark'>2   </span> <a id='x1-30002'></a>Usage</h3>
+<!-- l. 47 --><p class='noindent'>The basic usage is following:
+                                                                  
+
+                                                                  
+</p>   
+<pre class='verbatim' id='verbatim-1'>
+$ rmodepdf &lt;url&gt;
+</pre>
+<!-- l. 51 --><p class='nopar'>
+</p><!-- l. 53 --><p class='indent'>   If the compilation goes well, Rmodepdf should print a message like:
+                                                                  
+
+                                                                  
+</p>   
+<pre class='verbatim' id='verbatim-2'>
+[STATUS]  rmodepdf: File saved as: Page_Title.pdf
+</pre>
+<!-- l. 57 --><p class='nopar'>
+</p><!-- l. 59 --><p class='indent'>   File name of the PDF name is based on the web page title. You can choose a
+different filename using the <span class='obeylines-h'><code class='verb'>-o</code></span> option:
+                                                                  
+
+                                                                  
+</p>   
+<pre class='verbatim' id='verbatim-3'>
+$ rmodepdf -o sample &lt;url&gt;
+</pre>
+<!-- l. 64 --><p class='nopar'>
+</p><!-- l. 66 --><p class='indent'>   You can also compile several web pages at once, Rmodepdf will convert all URLs
+passed as argument as one PDF, with the filename based on the first page’s
+title:
+                                                                  
+
+                                                                  
+</p>   
+<pre class='verbatim' id='verbatim-4'>
+$ rmodepdf &lt;url1&gt; &lt;url2&gt; &lt;url3&gt;
+</pre>
+<!-- l. 71 --><p class='nopar'>
+</p><!-- l. 73 --><p class='indent'>   Instead of URLs, you can also pass filenames of local files or pass the HTML code
+from the standard input with the <span class='obeylines-h'><code class='verb'>-</code></span> option:
+                                                                  
+
+                                                                  
+</p>   
+<pre class='verbatim' id='verbatim-5'>
+$ rmodepdf - &lt; localfile.html
+</pre>
+<!-- l. 78 --><p class='nopar'>
+</p><!-- l. 85 --><p class='noindent'>
+</p>   
+<h4 class='subsectionHead' id='command-line-options'><span class='titlemark'>2.1   </span> <a id='x1-40002.1'></a>Command Line Options</h4>
+                                                                  
+
+                                                                  
+<pre class='verbatim' id='verbatim-6'>
+-b,--baseurl     (default "")      Base URL used when the HTML content is read
+                                   from the standard input
+-c,--configfile  (default "")      Filename of Lua configuration file
+-h,--help                          Print help message
+-i,--imgdir      (default "")      Download images and save them to the
+                                   specified directory
+-l,--loglevel    (default status)  Set log level
+                                   possible values: debug, info, status,
+                                   warning, error, fatal
+-n,--noimages                      Don't download images
+-N,--nomathjax                     Don't process LaTeX commands in the HTML
+                                   document
+-t,--template    (default "")      LaTeX template
+-o,--output      (default "")      Output file name
+-p,--pageformat  (default ebook)   Page format
+-s,--pagestyle   (default empty)   \pagestyle for the document
+-p,--print                         Print the converted LaTeX source
+-v,--version                       Print version
+&lt;url&gt;            (string)
+</pre>
+<!-- l. 107 --><p class='nopar'>
+</p><!-- l. 109 --><p class='noindent'>
+</p>   
+<h3 class='sectionHead' id='license'><span class='titlemark'>3   </span> <a id='x1-50003'></a>License</h3>
+<!-- l. 111 --><p class='noindent'>Permission is granted to copy, distribute and/or modify this software under the terms
+of the LaTeX Project Public License, version 1.3.
+</p><!-- l. 114 --><p class='noindent'>
+</p>   
+<h3 class='sectionHead' id='changelog'><span class='titlemark'>4   </span> <a id='x1-60004'></a>Changelog</h3>
+<!-- l. 115 --><p class='noindent'>
+<a id='x1-6001r1'></a></p>   
+<!-- l. 116 --><div class='longtable'> <table class='longtable' id='TBL-3'><colgroup id='TBL-3-1g'><col id='TBL-3-1' /><col id='TBL-3-2' /></colgroup>
+<tr id='TBL-3-1-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-1-1' style='white-space:nowrap; text-align:left;'>2023-11-24  </td>
+<td class='td11' id='TBL-3-1-2' style='white-space:normal; text-align:left;'> 
+<!-- l. 116 --><p class='noindent'>Initial release                                                                          </p></td>
+</tr><tr id='TBL-3-6-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-6-1' style='white-space:nowrap; text-align:left;'>          
+</td><td class='td11' id='TBL-3-6-2' style='white-space:normal; text-align:left;'>
+</td></tr>
+                                                                  
+
+                                                                  
+</table></div>   
+<div class='footnotes'><a id='x1-2002x1'></a>
+<!-- l. 37 --><p class='indent'>   <span class='footnote-mark'><a href='#fn1x0-bk' id='fn1x0'><sup class='textsuperscript'>1</sup></a></span><a class='url' href='https://github.com/eafer/rdrview'><span class='ec-lmtt-8'>https://github.com/eafer/rdrview</span></a></p>                                       </div>
+ 
+</body> 
+</html>
