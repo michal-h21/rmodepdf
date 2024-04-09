@@ -5,9 +5,9 @@ This utility converts text content of web pages to PDF using LaTeX. The text
 content is extracted using [rdrview](https://github.com/eafer/rdrview), utility
 that uses port of Firefox's reader view functionality.
 
-ToDo:
+# Documentation
 
-- convert webp and svg images to filetypes suitable for LaTeX
+You can find the documentation [here](https://www.kodymirus.cz/rmodepdf/).
 
 ## Intented support
 
