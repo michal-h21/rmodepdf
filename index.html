@@ -25,9 +25,14 @@ LaTeX</h2>
 <div class='tableofcontents'>   
 <span class='sectionToc'>1 <a href='#introduction' id='QQ2-1-2'>Introduction</a></span>
 <br />   <span class='sectionToc'>2 <a href='#usage' id='QQ2-1-3'>Usage</a></span>
-<br />   <span class='subsectionToc'>2.1 <a href='#command-line-options' id='QQ2-1-4'>Command Line Options</a></span>
-<br />   <span class='sectionToc'>3 <a href='#license' id='QQ2-1-5'>License</a></span>
-<br />   <span class='sectionToc'>4 <a href='#changelog' id='QQ2-1-6'>Changelog</a></span>
+<br />   <span class='sectionToc'>3 <a href='#command-line-options' id='QQ2-1-4'>Command Line Options</a></span>
+<br />   <span class='subsectionToc'>3.1 <a href='#image-handling' id='QQ2-1-5'>Image Handling</a></span>
+<br />   <span class='subsectionToc'>3.2 <a href='#mathjax-support' id='QQ2-1-6'>MathJax Support</a></span>
+<br />   <span class='subsectionToc'>3.3 <a href='#document-settings' id='QQ2-1-7'>Document Settings</a></span>
+<br />   <span class='sectionToc'>4 <a href='#configuration' id='QQ2-1-8'>Configuration</a></span>
+<br />   <span class='sectionToc'>5 <a href='#scripting' id='QQ2-1-9'>Scripting</a></span>
+<br />   <span class='sectionToc'>6 <a href='#license' id='QQ2-1-10'>License</a></span>
+<br />   <span class='sectionToc'>7 <a href='#changelog' id='QQ2-1-11'>Changelog</a></span>
 </div>
 <!-- l. 34 --><p class='noindent'>
 </p>   
@@ -95,9 +100,9 @@ from the standard input with the <span class='obeylines-h'><code class='verb'>-<
 $ rmodepdf - &lt; localfile.html
 </pre>
 <!-- l. 78 --><p class='nopar'>
-</p><!-- l. 85 --><p class='noindent'>
+</p><!-- l. 84 --><p class='noindent'>
 </p>   
-<h4 class='subsectionHead' id='command-line-options'><span class='titlemark'>2.1   </span> <a id='x1-40002.1'></a>Command Line Options</h4>
+<h3 class='sectionHead' id='command-line-options'><span class='titlemark'>3   </span> <a id='x1-40003'></a>Command Line Options</h3>
                                                                   
 
                                                                   
@@ -117,32 +122,77 @@ $ rmodepdf - &lt; localfile.html
 -t,--template    (default "")      LaTeX template
 -o,--output      (default "")      Output file name
 -p,--pageformat  (default ebook)   Page format
+-R,--nordrview                     Don't use rdrview to get the clean contents
+                                   from the web pages
 -s,--pagestyle   (default empty)   \pagestyle for the document
 -p,--print                         Print the converted LaTeX source
 -v,--version                       Print version
 &lt;url&gt;            (string)
 </pre>
-<!-- l. 107 --><p class='nopar'>
-</p><!-- l. 109 --><p class='noindent'>
+<!-- l. 109 --><p class='nopar'>
+</p><!-- l. 113 --><p class='noindent'>
 </p>   
-<h3 class='sectionHead' id='license'><span class='titlemark'>3   </span> <a id='x1-50003'></a>License</h3>
-<!-- l. 111 --><p class='noindent'>Permission is granted to copy, distribute and/or modify this software under the terms
-of the LaTeX Project Public License, version 1.3.
-</p><!-- l. 114 --><p class='noindent'>
-</p>   
-<h3 class='sectionHead' id='changelog'><span class='titlemark'>4   </span> <a id='x1-60004'></a>Changelog</h3>
-<!-- l. 115 --><p class='noindent'>
-<a id='x1-6001r1'></a></p>   
-<!-- l. 116 --><div class='longtable'> <table class='longtable' id='TBL-3'><colgroup id='TBL-3-1g'><col id='TBL-3-1' /><col id='TBL-3-2' /></colgroup>
-<tr id='TBL-3-1-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-1-1' style='white-space:nowrap; text-align:left;'>2023-11-24  </td>
-<td class='td11' id='TBL-3-1-2' style='white-space:normal; text-align:left;'> 
-<!-- l. 116 --><p class='noindent'>Initial release                                                                          </p></td>
-</tr><tr id='TBL-3-6-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-6-1' style='white-space:nowrap; text-align:left;'>          
-</td><td class='td11' id='TBL-3-6-2' style='white-space:normal; text-align:left;'>
-</td></tr>
+<h4 class='subsectionHead' id='image-handling'><span class='titlemark'>3.1   </span> <a id='x1-50003.1'></a>Image Handling</h4>
+<!-- l. 115 --><p class='noindent'>By default, Rmodepdf downloads all images and saves them as temporary files
+which are removed after each run. If you want to reuse these images, use the
+<span class='obeylines-h'><code class='verb'>--imgdir</code></span> option. It expects an existing directory where images should be
+saved.
                                                                   
 
                                                                   
+</p>   
+<pre class='verbatim' id='verbatim-7'>
+$ rmodepdf -i img &lt;url&gt;
+</pre>
+<!-- l. 121 --><p class='nopar'>
+</p><!-- l. 123 --><p class='indent'>   If you read HTML content from the standard input, you can use the
+<span class='obeylines-h'><code class='verb'>--baseurl</code></span> option to point to the adress where images should be looked
+up.
+</p><!-- l. 126 --><p class='indent'>   The <span class='obeylines-h'><code class='verb'>--noimages</code></span> option on the other hand will disable downloading of
+images.
+</p><!-- l. 128 --><p class='noindent'>
+</p>   
+<h4 class='subsectionHead' id='mathjax-support'><span class='titlemark'>3.2   </span> <a id='x1-60003.2'></a>MathJax Support</h4>
+<!-- l. 130 --><p class='noindent'>Rmodepdf expects web pages to use MathJax or KaTeX libraries, which enables
+LaTeX syntax for math in the HTML content. In some cases, this can lead to errors.
+For example if LaTeX commands are displayed in the HTML code outside of
+<span class='obeylines-h'><code class='verb'>&lt;code&gt;</code></span> or <span class='obeylines-h'><code class='verb'>&lt;pre&gt;</code></span> elements. The <span class='obeylines-h'><code class='verb'>--nomathjax</code></span> option will disable passing of
+LaTeX commands to the resulting document.
+</p><!-- l. 136 --><p class='noindent'>
+</p>   
+<h4 class='subsectionHead' id='document-settings'><span class='titlemark'>3.3   </span> <a id='x1-70003.3'></a>Document Settings</h4>
+<!-- l. 138 --><p class='noindent'>
+</p>   
+<h3 class='sectionHead' id='configuration'><span class='titlemark'>4   </span> <a id='x1-80004'></a>Configuration</h3>
+<!-- l. 140 --><p class='noindent'>
+</p>   
+<h3 class='sectionHead' id='scripting'><span class='titlemark'>5   </span> <a id='x1-90005'></a>Scripting</h3>
+<!-- l. 142 --><p class='noindent'>
+</p>   
+<h3 class='sectionHead' id='license'><span class='titlemark'>6   </span> <a id='x1-100006'></a>License</h3>
+                                                                  
+
+                                                                  
+<!-- l. 144 --><p class='noindent'>Permission is granted to copy, distribute and/or modify this software under the terms
+of the LaTeX Project Public License, version 1.3.
+</p><!-- l. 147 --><p class='noindent'>
+</p>   
+<h3 class='sectionHead' id='changelog'><span class='titlemark'>7   </span> <a id='x1-110007'></a>Changelog</h3>
+<!-- l. 148 --><p class='noindent'>
+<a id='x1-11001r1'></a></p>   
+<!-- l. 149 --><div class='longtable'> <table class='longtable' id='TBL-3'><colgroup id='TBL-3-1g'><col id='TBL-3-1' /><col id='TBL-3-2' /></colgroup>
+<tr id='TBL-3-1-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-1-1' style='white-space:nowrap; text-align:left;'>2024-04-09  </td>
+<td class='td11' id='TBL-3-1-2' style='white-space:normal; text-align:left;'> 
+<!-- l. 149 --><p class='noindent'>Added <span class='ec-lmtt-10'>–nordrview </span>option                                                         </p></td>
+</tr><tr id='TBL-3-2-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-2-1' style='white-space:nowrap; text-align:left;'>          </td>
+<td class='td11' id='TBL-3-2-2' style='white-space:normal; text-align:left;'> 
+<!-- l. 150 --><p class='noindent'>Basic metadata parsing if rdrview is not available or is disabled        </p></td>
+</tr><tr id='TBL-3-3-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-3-1' style='white-space:nowrap; text-align:left;'>2024-04-08  </td>
+<td class='td11' id='TBL-3-3-2' style='white-space:normal; text-align:left;'> 
+<!-- l. 151 --><p class='noindent'>ChangeLog start                                                                      </p></td>
+</tr><tr id='TBL-3-8-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-8-1' style='white-space:nowrap; text-align:left;'>          
+</td><td class='td11' id='TBL-3-8-2' style='white-space:normal; text-align:left;'>
+</td></tr>
 </table></div>   
 <div class='footnotes'><a id='x1-2002x1'></a>
 <!-- l. 37 --><p class='indent'>   <span class='footnote-mark'><a href='#fn1x0-bk' id='fn1x0'><sup class='textsuperscript'>1</sup></a></span><a class='url' href='https://github.com/eafer/rdrview'><span class='ec-lmtt-8'>https://github.com/eafer/rdrview</span></a></p>                                       </div>
