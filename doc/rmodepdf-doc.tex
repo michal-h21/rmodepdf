@@ -81,8 +81,8 @@ $ rmodepdf - < localfile.html
 
 
 
+\section{Command Line Options}
 
-\subsection{Command Line Options}
 
 \begin{verbatim}
 -b,--baseurl     (default "")      Base URL used when the HTML content is read
@@ -100,11 +100,44 @@ $ rmodepdf - < localfile.html
 -t,--template    (default "")      LaTeX template
 -o,--output      (default "")      Output file name
 -p,--pageformat  (default ebook)   Page format 
+-R,--nordrview                     Don't use rdrview to get the clean contents
+                                   from the web pages
 -s,--pagestyle   (default empty)   \pagestyle for the document
 -p,--print                         Print the converted LaTeX source
 -v,--version                       Print version
 <url>            (string)
 \end{verbatim}
+
+
+
+\subsection{Image Handling}
+
+By default, Rmodepdf downloads all images and saves them as temporary files which are removed
+after each run. If you want to reuse these images, use the \verb|--imgdir| option. It expects
+an existing directory where images should be saved.
+
+\begin{verbatim}
+$ rmodepdf -i img <url>
+\end{verbatim}
+
+If you read HTML content from the standard input, you can use the \verb|--baseurl| option to  
+point to the adress where images should be looked up.
+
+The \verb|--noimages| option on the other hand will disable downloading of images.
+
+\subsection{MathJax Support}
+
+Rmodepdf expects web pages to use MathJax or KaTeX libraries, which enables \LaTeX\ syntax for math 
+in the HTML content. In some cases, this can lead to errors. For example if  \LaTeX\ commands are 
+displayed in the HTML code outside of \verb|<code>| or \verb|<pre>| elements. The \verb|--nomathjax| option
+will disable passing of \LaTeX\ commands to the resulting document.
+
+
+\subsection{Document Settings}
+
+\section{Configuration}
+
+\section{Scripting}
 
 \section{License}
 
@@ -113,7 +146,9 @@ under the terms of the \LaTeX\ Project Public License, version 1.3.
 
 \section{Changelog}
 \begin{changelog}
-  \change{2023-11-24}{Initial release}
+  \change{2024-04-09}{Added \texttt{--nordrview} option}
+  \change{}{Basic metadata parsing if rdrview is not available or is disabled}
+  \change{2024-04-08}{ChangeLog start}
 \end{changelog}
 
 \end{document}
