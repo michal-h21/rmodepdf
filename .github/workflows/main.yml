@@ -16,7 +16,7 @@ jobs:
       with:
         run: |
           cd doc
-          make4ht -j index -la debug -d out texblend-doc.tex
+          make4ht -j index -la debug -d out rmodepdf-doc.tex "fn-in"
           cd ..
           mkdir out
           cp doc/out/*.* out
