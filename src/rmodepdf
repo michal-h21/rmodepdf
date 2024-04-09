@@ -59,6 +59,7 @@ Usage: rmodepdf [options] url
 -t,--template    (default "")      LaTeX template
 -o,--output      (default "")      Output file name
 -p,--pageformat  (default ebook)   Page format 
+-R,--nordrview                     Don't use rdrview to get the clean contents from the web pages
 -s,--pagestyle   (default empty)   \pagestyle for the document
 -p,--print                         Print the converted LaTeX source
 -v,--version                       Print version
@@ -170,6 +171,7 @@ if args.configfile and args.configfile~='""'  then
 end
 
 local function prepare_file(content, baseurl)
+  local content = content
   local enc = encodings.find_html_encoding(content)
   if enc then
     local mapping = encodings.load_mapping(enc)
@@ -177,13 +179,24 @@ local function prepare_file(content, baseurl)
       content = encodings.recode(content, mapping)
     end
   end
-
-  local tmpfile, metadata = htmllib.readability(content, baseurl)
-  local output = htmllib.clean_title(metadata.Title)
-  local f = io.open(tmpfile, "r")
-  local content = f:read("*all")
-  f:close()
+  local tmpfile, metadata
+  if not args.nordrview then
+    tmpfile, metadata = htmllib.readability(content, baseurl)
+    if not tmpfile then
+      log:error(metadata)
+      metadata = nil
+    else
+      local f = io.open(tmpfile, "r")
+      content = f:read("*all")
+      f:close()
+    end
+  end
   local dom = domobject.html_parse(content)
+  if not metadata then
+    -- metadata should be populated by rdrview, but if it fails, we will try to get it from DOM
+    metadata = htmllib.get_metadata(dom, baseurl)
+  end
+  local output = htmllib.clean_title(metadata.Title)
   dom = preprocess_dom(dom, content)
   if not args.noimages then
     dom = htmllib.download_images(dom, imgdir)

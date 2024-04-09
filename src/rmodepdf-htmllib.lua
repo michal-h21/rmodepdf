@@ -172,6 +172,33 @@ local function readability(content, baseurl)
   return tmpfile, metadata -- we can use tidy on the tmpfile, so we will keep the content inside
 end
 
+local function get_metadata(dom, baseurl)
+  local metadata = {}
+  metadata.url = baseurl
+  metadata.author = ""
+  metadata.Byline = ""
+  metadata["Site name"] = ""
+
+  dom:traverse_elements(function(el)
+    local name = string.lower(el:get_element_name())
+    if name == "title" then 
+      metadata.Title = el:get_text()
+    elseif name == "meta" then
+      local property = el:get_attribute("property")
+      if property == "og:title" then
+        metadata.Title = el:get_attribute "content"
+      elseif property == "og:description" then
+      end
+    end
+    if not metadata.language and el:get_attribute("lang") then
+      metadata.language = languages.get_babel_name(el:get_attribute("lang"))
+      el:set_attribute("lang", metadata.language)
+    end
+  end)
+
+  return metadata
+end
+
 -- in the future, we should convert HTML to XML ourselves, because tidy removes spaces when we want them
 local function tidy(tmpfile)
   -- os type is provided by LuaTeX. we use it to get correct location of the null file
@@ -326,4 +353,5 @@ return {
   clean_title = clean_title,
   set_page_dimensions=set_page_dimensions,
   file_exists = file_exists,
+  get_metadata = get_metadata,
 }
