@@ -113,6 +113,7 @@ xmltransform.add_action("details summary", [[
 
 xmltransform.add_action("figure", [[
 \begin{figure}[hbt!]
+\centering
 
 %s
 

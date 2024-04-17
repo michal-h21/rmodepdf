@@ -118,7 +118,7 @@ end
 
 template = [[
 \documentclass{article}
-\usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec,microtype}
+\usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec,microtype,subcaption}
 \usepackage[export]{adjustbox}
 \usepackage[@{lang}]{babel}
 \setmainfont{Literata}
