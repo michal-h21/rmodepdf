@@ -335,7 +335,11 @@ local function set_page_dimensions(dom, format, pagestyle)
     -- construct keyval argument for the geometry package
     local s = {} 
     for k,v in pairs(pageformat) do
-      s[#s+1] =  k .. "=" .. v
+      if type(k) == "number" then
+        s[#s+1] = v
+      else
+        s[#s+1] =  k .. "=" .. v
+      end
     end
     html:set_attribute("geometry", table.concat(s, ","))
   else 

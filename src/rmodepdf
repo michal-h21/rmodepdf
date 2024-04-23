@@ -19,7 +19,9 @@ config = {
   },
   max_runs = 3, -- maximum number of compilations
   page_formats = {
-    ebook = {paperwidth="116mm", paperheight = "182mm", margin = "5mm"}
+    ebook = {paperwidth="116mm", paperheight = "182mm", margin = "5mm"},
+    a5paper = {"a5paper"},
+    a4paper = {"a4paper"},
   },
   allowed_url_prefixes = {"http", "https", "ftp"},
 }
@@ -58,10 +60,10 @@ Usage: rmodepdf [options] url
 -N,--nomathjax                     Don't process LaTeX commands in the HTML document
 -t,--template    (default "")      LaTeX template
 -o,--output      (default "")      Output file name
--p,--pageformat  (default ebook)   Page format 
+-p,--print                         Print the converted LaTeX source
+-P,--pageformat  (default ebook)   Page format 
 -R,--nordrview                     Don't use rdrview to get the clean contents from the web pages
 -s,--pagestyle   (default empty)   \pagestyle for the document
--p,--print                         Print the converted LaTeX source
 -v,--version                       Print version
 <url>            (string)
 ]]
