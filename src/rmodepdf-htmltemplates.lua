@@ -38,7 +38,7 @@ xmltransform.add_action("kbd", [[\texttt{%s}]])
 xmltransform.add_action("var", [[\textit{%s}]])
 xmltransform.add_action("dfn", [[\texttt{%s}]])
 xmltransform.add_action("code", [[\texttt{%s}]])
-xmltransform.add_action("a[href]", [[\textit{%s}\footnote{\texttt{@{href}}}]])
+xmltransform.add_action("a[href]", [[\textit{%s}\protect\footnote{\texttt{@{href}}}]])
 
 
 local itemize = [[
@@ -72,7 +72,7 @@ local quote = [[
 
 xmltransform.add_action("blockquote", quote)
 xmltransform.add_action("q", "\\enquote{%s}")
-xmltransform.add_action("abbr", "%s\\footnote{@{title}}")
+xmltransform.add_action("abbr", "%s\\protect\\footnote{@{title}}")
 xmltransform.add_action("sup", "\\textsuperscript{%s}")
 xmltransform.add_action("sub", "\\textsubscript{%s}")
 
