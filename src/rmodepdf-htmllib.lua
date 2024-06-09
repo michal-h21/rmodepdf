@@ -156,7 +156,7 @@ end
 local function readability(content, baseurl)
   local tmpfile = tmpfiles.tmpname() -- the clean up html content will be saved here
   local metadatafile = tmpfiles.tmpname() -- we can get also some metadata
-  local command = io.popen(string.format("rdrview -H -u %s > %s", baseurl, tmpfile), "w")
+  local command = io.popen(string.format("rdrview -P -H -u %s > %s", baseurl, tmpfile), "w")
   if not command then return nil, "cannot load rdrview" end
   command:write(content)
   command:close()
