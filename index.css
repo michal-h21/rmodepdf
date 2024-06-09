@@ -58,6 +58,7 @@ h1,h2,h3,h4,h5 { line-height:1.2; }
 .subsectionHead, .likesubsectionHead { font-size: 1.3195em; }
 .subsubsectionHead, .likesubsubsectionHead { font-size: 1.1487em; }
  @media (prefers-color-scheme: dark) { img[src^="index"]{filter: invert(1); } } 
+ body { background-color: Canvas; color: CanvasText; color-scheme: light dark; } 
 li p.indent { text-indent: 0em }
 li p:first-child{ margin-top:0em; }
 li p:last-child, li div:last-child { margin-bottom:0.5em; }
@@ -197,6 +198,7 @@ table[rules] {border-left:solid black 0.4pt; border-right:solid black 0.4pt; }
 .hline + .vspace:last-child{display:none;}
 .hline:first-child{border-bottom:1px solid black;border-top:none;}
 div.array {text-align:center;}
+.textls{letter-spacing:0.1rem;}
 .small-caps{font-variant: small-caps;}
 /* end css.sty */
 
