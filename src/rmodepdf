@@ -145,6 +145,8 @@ if args.template and args.template~='""' then
   if f then
     template = f:read("*all")
     f:close()
+  else
+    log:error("Cannot read template: " .. args.template)
   end
 end
 
