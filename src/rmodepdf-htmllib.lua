@@ -185,9 +185,15 @@ local function get_metadata(dom, baseurl)
       metadata.Title = el:get_text()
     elseif name == "meta" then
       local property = el:get_attribute("property")
+      local prop_name = el:get_attribute("name")
+      local content = el:get_attribute("content")
       if property == "og:title" then
-        metadata.Title = el:get_attribute "content"
+        metadata.Title = content
       elseif property == "og:description" then
+      elseif prop_name == "author" then
+        metadata.Byline = content
+      elseif property == "og:site_name" then
+        metadata["Site name"] = content
       end
     end
     if not metadata.language and el:get_attribute("lang") then
