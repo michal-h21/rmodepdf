@@ -137,6 +137,26 @@ will disable passing of \LaTeX\ commands to the resulting document.
 
 \section{Configuration}
 
+\section{\LaTeX\ Templates}
+
+
+\subsection{Syntax}
+
+
+\subsection{Required packages}
+
+
+The default templates used for conversion from HTML to \LaTeX\ utilize some
+commands that are not available in pure \LaTeX. If you are creating your own
+template, it is necessary to use the following packages in it to avoid
+compilation errors.
+
+\begin{description}
+  \item[cals] -- table support
+  \item[csquotes] -- multilinugal support for in-text quotes
+  \item[adjustbox] -- automatic resizing of images, to fit into page dimensions
+\end{description}
+
 \section{Scripting}
 
 \section{License}
