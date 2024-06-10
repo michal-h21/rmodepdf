@@ -18,7 +18,7 @@
 <h2 class='titleHead'>Rmodepdf – convert web pages to PDF using
 LaTeX</h2>
  <div class='author'><span class='ec-lmr-12'>Michal Hoftich &lt;</span><a href='michal.h21@gmail.com'><span class='ec-lmr-12'>michal.h21@gmail.com</span></a><span class='ec-lmr-12'>&gt;</span></div><br />
-<div class='date'><span class='ec-lmr-12'>Version devel, June 9, 2024</span></div>
+<div class='date'><span class='ec-lmr-12'>Version devel, June 10, 2024</span></div>
 </div><!-- tex4ht:inline --><div class='tabular'> <table class='tabular' id='TBL-2'><colgroup id='TBL-2-1g'><col id='TBL-2-1' /><col id='TBL-2-2' /></colgroup><tr id='TBL-2-1-' style='vertical-align:baseline;'><td class='td11' id='TBL-2-1-1' style='white-space:nowrap; text-align:left;'> Homepage:    </td><td class='td11' id='TBL-2-1-2' style='white-space:nowrap; text-align:left;'> <a class='url' href='https://www.kodymirus.cz/texblend/'><span class='ec-lmtt-10'>https://www.kodymirus.cz/texblend/</span></a>     </td>
 </tr><tr id='TBL-2-2-' style='vertical-align:baseline;'><td class='td11' id='TBL-2-2-1' style='white-space:nowrap; text-align:left;'> Issue tracker:  </td><td class='td11' id='TBL-2-2-2' style='white-space:nowrap; text-align:left;'> <a class='url' href='https://github.com/michal-h21/texblend'><span class='ec-lmtt-10'>https://github.com/michal-h21/texblend</span></a> </td></tr></table>     </div>
 <h3 class='likesectionHead' id='contents'><a id='x1-1000'></a>Contents</h3>
@@ -30,9 +30,12 @@ LaTeX</h2>
 <br />   <span class='subsectionToc'>3.2 <a href='#mathjax-support' id='QQ2-1-6'>MathJax Support</a></span>
 <br />   <span class='subsectionToc'>3.3 <a href='#document-settings' id='QQ2-1-7'>Document Settings</a></span>
 <br />   <span class='sectionToc'>4 <a href='#configuration' id='QQ2-1-8'>Configuration</a></span>
-<br />   <span class='sectionToc'>5 <a href='#scripting' id='QQ2-1-9'>Scripting</a></span>
-<br />   <span class='sectionToc'>6 <a href='#license' id='QQ2-1-10'>License</a></span>
-<br />   <span class='sectionToc'>7 <a href='#changelog' id='QQ2-1-11'>Changelog</a></span>
+<br />   <span class='sectionToc'>5 <a href='#latex-templates' id='QQ2-1-9'>LaTeX Templates</a></span>
+<br />   <span class='subsectionToc'>5.1 <a href='#syntax' id='QQ2-1-10'>Syntax</a></span>
+<br />   <span class='subsectionToc'>5.2 <a href='#required-packages' id='QQ2-1-11'>Required packages</a></span>
+<br />   <span class='sectionToc'>6 <a href='#scripting' id='QQ2-1-12'>Scripting</a></span>
+<br />   <span class='sectionToc'>7 <a href='#license' id='QQ2-1-13'>License</a></span>
+<br />   <span class='sectionToc'>8 <a href='#changelog' id='QQ2-1-14'>Changelog</a></span>
 </div>
 <!-- l. 34 --><p class='noindent'>
 </p>   
@@ -42,12 +45,12 @@ using <i>rdrview</i><span class='footnote-mark'><a href='#fn1x0' id='fn1x0-bk'><
 utility that provides a port of Firefox’s reader view functionality. This means that it
 strips away clutter like buttons, ads, background images, and videos, leaving only the
 article text.
-</p><!-- l. 40 --><p class='indent'>   It doesn’t support any CSS or JavaScript, only plain HTML. The main purpose is
-to create version of longer articles suitable for reading on e-readers, tablets and
-phones. Another possible usage is for printing of web pages.
                                                                   
 
                                                                   
+</p><!-- l. 40 --><p class='indent'>   It doesn’t support any CSS or JavaScript, only plain HTML. The main purpose is
+to create version of longer articles suitable for reading on e-readers, tablets and
+phones. Another possible usage is for printing of web pages.
 </p><!-- l. 45 --><p class='noindent'>
 </p>   
 <h3 class='sectionHead' id='usage'><span class='titlemark'>2   </span> <a id='x1-30002'></a>Usage</h3>
@@ -166,30 +169,64 @@ LaTeX commands to the resulting document.
 <h3 class='sectionHead' id='configuration'><span class='titlemark'>4   </span> <a id='x1-80004'></a>Configuration</h3>
 <!-- l. 140 --><p class='noindent'>
 </p>   
-<h3 class='sectionHead' id='scripting'><span class='titlemark'>5   </span> <a id='x1-90005'></a>Scripting</h3>
-<!-- l. 142 --><p class='noindent'>
+<h3 class='sectionHead' id='latex-templates'><span class='titlemark'>5   </span> <a id='x1-90005'></a>LaTeX Templates</h3>
+<!-- l. 143 --><p class='noindent'>
 </p>   
-<h3 class='sectionHead' id='license'><span class='titlemark'>6   </span> <a id='x1-100006'></a>License</h3>
+<h4 class='subsectionHead' id='syntax'><span class='titlemark'>5.1   </span> <a id='x1-100005.1'></a>Syntax</h4>
                                                                   
 
                                                                   
-<!-- l. 144 --><p class='noindent'>Permission is granted to copy, distribute and/or modify this software under the terms
-of the LaTeX Project Public License, version 1.3.
-</p><!-- l. 147 --><p class='noindent'>
+<!-- l. 146 --><p class='noindent'>
 </p>   
-<h3 class='sectionHead' id='changelog'><span class='titlemark'>7   </span> <a id='x1-110007'></a>Changelog</h3>
-<!-- l. 148 --><p class='noindent'>
-<a id='x1-11001r1'></a></p>   
-<!-- l. 149 --><div class='longtable'> <table class='longtable' id='TBL-3'><colgroup id='TBL-3-1g'><col id='TBL-3-1' /><col id='TBL-3-2' /></colgroup>
+<h4 class='subsectionHead' id='required-packages'><span class='titlemark'>5.2   </span> <a id='x1-110005.2'></a>Required packages</h4>
+<!-- l. 149 --><p class='noindent'>The default templates used for conversion from HTML to LaTeX utilize some
+commands that are not available in pure LaTeX. If you are creating your own
+template, it is necessary to use the following packages in it to avoid compilation
+errors.
+</p><!-- l. 154 --><p class='indent'>     
+</p>
+<dl class='description'><dt class='description'>
+<span class='ec-lmbx-10'>cals</span> 
+</dt><dd class='description'>
+<!-- l. 155 --><p class='noindent'>– table support
+</p>     
+</dd>
+<dt class='description'>
+<span class='ec-lmbx-10'>csquotes</span> 
+</dt><dd class='description'>
+<!-- l. 156 --><p class='noindent'>– multilinugal support for in-text quotes
+</p>     
+</dd>
+<dt class='description'>
+<span class='ec-lmbx-10'>adjustbox</span> 
+</dt><dd class='description'>
+<!-- l. 157 --><p class='noindent'>– automatic resizing of images, to fit into page dimensions</p></dd></dl>
+<!-- l. 160 --><p class='noindent'>
+</p>   
+<h3 class='sectionHead' id='scripting'><span class='titlemark'>6   </span> <a id='x1-120006'></a>Scripting</h3>
+<!-- l. 162 --><p class='noindent'>
+</p>   
+<h3 class='sectionHead' id='license'><span class='titlemark'>7   </span> <a id='x1-130007'></a>License</h3>
+<!-- l. 164 --><p class='noindent'>Permission is granted to copy, distribute and/or modify this software under the terms
+of the LaTeX Project Public License, version 1.3.
+</p><!-- l. 167 --><p class='noindent'>
+</p>   
+<h3 class='sectionHead' id='changelog'><span class='titlemark'>8   </span> <a id='x1-140008'></a>Changelog</h3>
+<!-- l. 168 --><p class='noindent'>
+<a id='x1-14001r1'></a></p>   
+<!-- l. 169 --><div class='longtable'> <table class='longtable' id='TBL-3'><colgroup id='TBL-3-1g'><col id='TBL-3-1' /><col id='TBL-3-2' /></colgroup>
 <tr id='TBL-3-1-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-1-1' style='white-space:nowrap; text-align:left;'>2024-04-09  </td>
 <td class='td11' id='TBL-3-1-2' style='white-space:normal; text-align:left;'> 
-<!-- l. 149 --><p class='noindent'>Added <span class='ec-lmtt-10'>--nordrview </span>option                                                        </p></td>
+<!-- l. 169 --><p class='noindent'>Added <span class='ec-lmtt-10'>--nordrview </span>option                                                        </p></td>
 </tr><tr id='TBL-3-2-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-2-1' style='white-space:nowrap; text-align:left;'>          </td>
 <td class='td11' id='TBL-3-2-2' style='white-space:normal; text-align:left;'> 
-<!-- l. 150 --><p class='noindent'>Basic metadata parsing if rdrview is not available or is disabled        </p></td>
+<!-- l. 170 --><p class='noindent'>Basic metadata parsing if rdrview is not available or is disabled        </p></td>
+                                                                  
+
+                                                                  
 </tr><tr id='TBL-3-3-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-3-1' style='white-space:nowrap; text-align:left;'>2024-04-08  </td>
 <td class='td11' id='TBL-3-3-2' style='white-space:normal; text-align:left;'> 
-<!-- l. 151 --><p class='noindent'>ChangeLog start                                                                      </p></td>
+<!-- l. 171 --><p class='noindent'>ChangeLog start                                                                      </p></td>
 </tr><tr id='TBL-3-8-' style='vertical-align:baseline;'><td class='td01' id='TBL-3-8-1' style='white-space:nowrap; text-align:left;'>          
 </td><td class='td11' id='TBL-3-8-2' style='white-space:normal; text-align:left;'>
 </td></tr>
