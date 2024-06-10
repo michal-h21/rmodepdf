@@ -25,6 +25,10 @@ local hashes = {}
 
 local function get_hash(filename)
   local f = io.open(filename, "r")
+  if not f then
+    log:error("Cannot open file for hash: " .. filename)
+    return nil
+  end
   local content = f:read("*all")
   f:close()
   return md5.sumhexa(content)
