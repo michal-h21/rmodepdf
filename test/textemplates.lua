@@ -18,8 +18,12 @@ describe("Basic expansion should work", function()
     \setmainfont{Literata}
     \usepackage[@{geometry}]{geometry}
     \pagestyle{@{pagestyle}}]]
-    print(expand(test, "", {lang="czech"}))
-
+    local expanded = 
+    [[\usepackage[czech]{babel}
+    \setmainfont{Literata}
+    \usepackage[]{geometry}
+    \pagestyle{}]]
+    assert.same(expand(test, "", {lang="czech"}), expanded)
   end)
 end)
 
@@ -52,6 +56,17 @@ describe("Conditional templates should work", function ()
   end)
   it("Should expand variables in conditions", function ()
     assert.same(expand("what? ?{hello}{@{hello} exists}{doesn't exist}", "", test_table), "what? world exists")
+
+  end)
+end)
+
+describe("Loops should work", function()
+  it("should loop", function ()
+    -- 
+    local test_table = {hello = {"first","second"}}
+    print(expand("hello: _{hello}hello, /{hello}", "", test_table))
+    print(expand("hello: _{hello}%s, /{hello}", "", test_table))
+    print "hmmm?"
 
   end)
 end)

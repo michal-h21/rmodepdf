@@ -34,8 +34,32 @@ end
 function textemplates.expand(template, content, params)
   local content = content or ""
   local params = params or {}
+  -- support loops
+  local result = template:gsub("_(%b{})(.-)%/(%b{})",function (start, loop_content, stop)
+    -- start and stop need to be the same
+    if start ~= stop then return string.format("_%s%s/%s", start, content, stop) end
+    local value = get_value(remove_braces(start), params)
+    -- value must be table
+    if not value or type(value) ~= "table" then return "" end
+    -- arrays are processed in order, hash tables randomly
+    local pair_fn = pairs
+    if #value > 0 then pair_fn = ipairs end
+    local newcontent = {}
+    for _, val in pair_fn(value) do
+      local str, tbl
+      -- we also use different method of expansion depending on the fact if the value is table or something else
+      -- if it is table, it's keys will be available. if not, we can use the value using %s
+      if type(val) == "table" then
+        str, tbl = "", val
+      else
+        str, tbl = val, {}
+      end
+      newcontent[#newcontent+1] =  textemplates.expand(loop_content, str, tbl)
+    end
+    return table.concat(newcontent)
+  end)
   -- test if the variable in the first parameter exists and expand true or false part accordingly
-  local result = template:gsub("%?(%b{})(%b{})(%b{})", function(test, true_part, false_part)
+  result = result:gsub("%?(%b{})(%b{})(%b{})", function(test, true_part, false_part)
     local test, true_part, false_part = remove_braces(test), remove_braces(true_part), remove_braces(false_part)
     local value = get_value(test, params)
     if value then
