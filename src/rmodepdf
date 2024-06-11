@@ -44,6 +44,7 @@ local encodings = require "luaxml-encodings"
 local mathjax = require "rmodepdf-mathjax"
 local compile = require "rmodepdf-compile"
 local tmpfiles = require "rmodepdf-tmpfiles"
+local textemplates = require "rmodepdf-textemplates"
 
 local log = logging.new "rmodepdf"
 
@@ -241,7 +242,9 @@ end
 
 
 
-htmllib.set_page_dimensions(dom, args.pageformat, args.pagestyle)
+config.geometry, config.pagestyle = htmllib.set_page_dimensions(dom, args.pageformat, args.pagestyle)
+
+
 
 htmlprocess.add_action("html", template)
 
