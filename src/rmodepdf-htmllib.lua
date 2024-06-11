@@ -339,7 +339,7 @@ local function set_page_dimensions(dom, format, pagestyle)
   local pageformat = config.page_formats[format]
   if pageformat then
     -- construct keyval argument for the geometry package
-    local s = {} 
+    local s = {}
     for k,v in pairs(pageformat) do
       if type(k) == "number" then
         s[#s+1] = v
@@ -348,9 +348,10 @@ local function set_page_dimensions(dom, format, pagestyle)
       end
     end
     html:set_attribute("geometry", table.concat(s, ","))
-  else 
+  else
     html:set_attribute("geometry", "")
   end
+  return html:get_attribute("geometry"), pagestyle
 
 end
 
