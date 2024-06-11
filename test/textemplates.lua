@@ -61,12 +61,18 @@ describe("Conditional templates should work", function ()
 end)
 
 describe("Loops should work", function()
+  it("should ignore non-existing keys", function ()
+    local test_table = {}
+    assert.same(expand("hello:_{foo}%s/{foo}", "", test_table), "hello:")
+  end)
   it("should loop", function ()
     -- 
     local test_table = {hello = {"first","second"}}
-    print(expand("hello: _{hello}hello, /{hello}", "", test_table))
-    print(expand("hello: _{hello}%s, /{hello}", "", test_table))
-    print "hmmm?"
-
+    assert.same(expand("hello: _{hello}hello, /{hello}", "", test_table), "hello: hello, hello, ")
+    assert.same(expand("hello: _{hello}%s, /{hello}", "", test_table), "hello: first, second, ")
+  end)
+  it("Should serve tables", function ()
+    local test_table = {hello = {{name="Tom", age="34"},{name="Susan", age = "35"}}}
+    assert.same(expand("hello: _{hello}@{name}, /{hello}", "", test_table), "hello: Tom, Susan, ")
   end)
 end)
