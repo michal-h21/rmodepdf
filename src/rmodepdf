@@ -24,6 +24,8 @@ config = {
     a4paper = {"a4paper"},
   },
   allowed_url_prefixes = {"http", "https", "ftp"},
+  pages = {},  -- processed pages DOM and metadata
+  document = {} -- document settings
 }
 --- we must add  this configuration separatelly, because we already use other 
 config.mime_to_ext = {
@@ -229,17 +231,6 @@ end
 
 local dom, output, metadata = prepare_file(content, baseurl)
 
-if not output or output == "" then
-  output = "rmodepdf-" .. os.date("%Y%m%d-%H-%M")
-end
-
-if args.output and args.output~='""' then
-  -- if the output file name is specified at the command line, remove the .pdf extension, 
-  -- as it is used as the --jobname option lualatex
-  output = args.output:gsub(".pdf$", "")
-end
-
-
 
 
 config.geometry, config.pagestyle = htmllib.set_page_dimensions(dom, args.pageformat, args.pagestyle)
@@ -269,6 +260,19 @@ if #args > 0 then
   -- place the newly procesed before \end{document} of the original processed file
   processed = processed:gsub("\\end{document}%s*$", table.concat(new_processed, "\n\n")).."\n\n\\end{document}"
 end
+
+
+if not output or output == "" then
+  output = "rmodepdf-" .. os.date("%Y%m%d-%H-%M")
+end
+
+if args.output and args.output~='""' then
+  -- if the output file name is specified at the command line, remove the .pdf extension, 
+  -- as it is used as the --jobname option lualatex
+  output = args.output:gsub(".pdf$", "")
+end
+
+
 
 if args.print then
   print(processed)
