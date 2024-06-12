@@ -25,7 +25,9 @@ config = {
   },
   allowed_url_prefixes = {"http", "https", "ftp"},
   pages = {},  -- processed pages DOM and metadata
-  document = {} -- document settings
+  document = {-- document settings
+    languages = {} -- list of all used languages, for use with Babel or Polyglossia
+  } 
 }
 --- we must add  this configuration separatelly, because we already use other 
 config.mime_to_ext = {
@@ -235,8 +237,10 @@ end
 local dom, output, metadata = prepare_file(content, baseurl)
 
 
-config.geometry, config.pagestyle = htmllib.set_page_dimensions(dom, args.pageformat, args.pagestyle)
 
+
+config.document.geometry, config.document.pagestyle = htmllib.set_page_dimensions(dom, args.pageformat, args.pagestyle)
+table.insert(config.document.languages, metadata.language)
 
 
 -- htmlprocess.add_action("html", template)
@@ -262,6 +266,7 @@ if #args > 0 then
       new_processed[#new_processed+1] = htmlprocess.process_dom(dom)
       metadata.content = new_processed[#new_processed]
       table.insert(config.pages, metadata)
+      table.insert(config.document.languages, metadata.language)
     end
   end
   -- place the newly procesed before \end{document} of the original processed file
@@ -269,7 +274,8 @@ if #args > 0 then
 end
 
 
-if not output or output == "" then
+-- if we don't have explicit output filename from the command line or if it is invalid, use the filename based on datetime
+if not output or output == ""  or output == "_" then
   output = "rmodepdf-" .. os.date("%Y%m%d-%H-%M")
 end
 
@@ -279,18 +285,29 @@ if args.output and args.output~='""' then
   output = args.output:gsub(".pdf$", "")
 end
 
+-- remove duplicate languages for use with Babel
+local used_languages = {}
+for i, lang in ipairs(config.document.languages) do
+  if used_languages[lang] then table.remove(config.document.languages, i) end
+  used_languages[lang] = true
+end
+
+
 local ttemplate = [[ 
 \documentclass{article}
 \usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec,microtype}
 \usepackage[export]{adjustbox}
-\usepackage[@{lang}]{babel}
+\usepackage[_{document.languages}%s,/{document.languages}]{babel}
+\setmainfont{Literata}
+\usepackage[@{document.geometry}]{geometry}
+\pagestyle{@{document.pagestyle}}
 \begin{document}
 _{pages}
 \selectlanguage{@{language}}
 ?{Title}{\noindent\textbf{Title: @{Title}}\par}{}
 ?{Byline}{\noindent Author: @{Byline}\par}{}
-Language: @{language}, @{Byline} @{Title}, @{Excerpt}
 @{content}
+\clearpage
 /{pages}
 \end{document}
 ]]
