@@ -185,6 +185,7 @@ end
 --- @return table metadata 
 local function prepare_file(content, baseurl)
   local content = content
+  -- recode document from 8-bit encoding to UTF-8 if necessary
   local enc = encodings.find_html_encoding(content)
   if enc then
     local mapping = encodings.load_mapping(enc)
@@ -200,8 +201,10 @@ local function prepare_file(content, baseurl)
       metadata = nil
     else
       local f = io.open(tmpfile, "r")
-      content = f:read("*all")
-      f:close()
+      if f then
+        content = f:read("*all")
+        f:close()
+      end
     end
   end
   local dom = domobject.html_parse(content)
@@ -232,20 +235,22 @@ end
 local dom, output, metadata = prepare_file(content, baseurl)
 
 
-
 config.geometry, config.pagestyle = htmllib.set_page_dimensions(dom, args.pageformat, args.pagestyle)
 
 
 
-htmlprocess.add_action("html", template)
+-- htmlprocess.add_action("html", template)
 
 local processed = htmlprocess.process_dom(dom)
+
+metadata.content = processed
+table.insert(config.pages, metadata)
 
 -- if we get multiple urls, we will process them all
 if #args > 0 then
   -- we must use different template than for the first file, because the default template produces full
   -- LaTeX document, including \end{document}
-  htmlprocess.add_action("html[lang]", multi_template)
+  -- htmlprocess.add_action("html[lang]", multi_template)
   local new_processed = {}
   for _, url in ipairs(args) do
     local content, err_msg = htmllib.curl(url)
@@ -253,8 +258,10 @@ if #args > 0 then
       log:error("Cannot load url: "  .. url)
       log:error(err_msg)
     else
-      local dom = prepare_file(content, url)
+      local dom, output, metadata = prepare_file(content, url)
       new_processed[#new_processed+1] = htmlprocess.process_dom(dom)
+      metadata.content = new_processed[#new_processed]
+      table.insert(config.pages, metadata)
     end
   end
   -- place the newly procesed before \end{document} of the original processed file
@@ -272,11 +279,29 @@ if args.output and args.output~='""' then
   output = args.output:gsub(".pdf$", "")
 end
 
+local ttemplate = [[ 
+\documentclass{article}
+\usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec,microtype}
+\usepackage[export]{adjustbox}
+\usepackage[@{lang}]{babel}
+\begin{document}
+_{pages}
+\selectlanguage{@{language}}
+?{Title}{\noindent\textbf{Title: @{Title}}\par}{}
+?{Byline}{\noindent Author: @{Byline}\par}{}
+Language: @{language}, @{Byline} @{Title}, @{Excerpt}
+@{content}
+/{pages}
+\end{document}
+]]
 
+
+processed = textemplates.expand(ttemplate, "", config)
+print(processed)
 
 if args.print then
   print(processed)
-else 
+else
   compile.compile(processed, output)
   log:status("File saved as: " .. output .. ".pdf")
 end
