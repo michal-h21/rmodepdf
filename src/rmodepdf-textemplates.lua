@@ -37,8 +37,8 @@ function textemplates.expand(template, content, params)
   -- support loops
   local result = template:gsub("_(%b{})(.-)%/(%b{})",function (start, loop_content, stop)
     -- start and stop need to be the same
-    if start ~= stop then return string.format("_%s%s/%s", start, content, stop) end
     local value = get_value(remove_braces(start), params)
+    local separator = remove_braces(stop)
     -- value must be table
     if not value or type(value) ~= "table" then return "" end
     -- arrays are processed in order, hash tables randomly
@@ -56,7 +56,7 @@ function textemplates.expand(template, content, params)
       end
       newcontent[#newcontent+1] =  textemplates.expand(loop_content, str, tbl)
     end
-    return table.concat(newcontent)
+    return table.concat(newcontent, separator)
   end)
   -- test if the variable in the first parameter exists and expand true or false part accordingly
   result = result:gsub("%?(%b{})(%b{})(%b{})", function(test, true_part, false_part)

@@ -68,11 +68,11 @@ describe("Loops should work", function()
   it("should loop", function ()
     -- 
     local test_table = {hello = {"first","second"}}
-    assert.same(expand("hello: _{hello}hello, /{hello}", "", test_table), "hello: hello, hello, ")
-    assert.same(expand("hello: _{hello}%s, /{hello}", "", test_table), "hello: first, second, ")
+    assert.same(expand("hello: _{hello}hello/{, }", "", test_table), "hello: hello, hello")
+    assert.same(expand("hello: _{hello}%s/{, }", "", test_table), "hello: first, second")
   end)
   it("Should serve tables", function ()
     local test_table = {hello = {{name="Tom", age="34"},{name="Susan", age = "35"}}}
-    assert.same(expand("hello: _{hello}@{name}, /{hello}", "", test_table), "hello: Tom, Susan, ")
+    assert.same(expand("hello: _{hello}@{name}/{, }", "", test_table), "hello: Tom, Susan")
   end)
 end)
