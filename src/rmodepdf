@@ -27,7 +27,7 @@ config = {
   pages = {},  -- processed pages DOM and metadata
   document = {-- document settings
     languages = {} -- list of all used languages, for use with Babel or Polyglossia
-  } 
+  }
 }
 --- we must add  this configuration separatelly, because we already use other 
 config.mime_to_ext = {
@@ -326,6 +326,10 @@ post_process()
 
 processed = textemplates.expand(config.template, "", config)
 print(processed)
+
+----------------------
+--- output         ---
+----------------------
 
 if args.print then
   print(processed)
