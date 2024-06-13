@@ -350,15 +350,9 @@ local function clean_title(title)
   return title
 end
 
-
-local function set_page_dimensions(dom, format, pagestyle)
-  -- save information for the geometry package and \pageformat as attributes for the <html> element,
-  -- so the tranform library can use them in the template for the page
-  local html = dom:query_selector("html")[1]
-  if not html then return nil, "cannot find the html element" end
-  html:set_attribute("pagestyle", pagestyle)
-  -- now get information for the specified page format from the configuration
-  -- each format should have corresponding table in the form of {paperwidth=...,paperheight=...,margin=...}
+--- get string with page dimensions suitable for the Geometry package
+--- @param format string 
+local function get_geometry(format)
   local pageformat = config.page_formats[format]
   if pageformat then
     -- construct keyval argument for the geometry package
@@ -370,7 +364,22 @@ local function set_page_dimensions(dom, format, pagestyle)
         s[#s+1] =  k .. "=" .. v
       end
     end
-    html:set_attribute("geometry", table.concat(s, ","))
+    return table.concat(s, ",")
+  end
+end
+
+
+local function set_page_dimensions(dom, format, pagestyle)
+  -- save information for the geometry package and \pageformat as attributes for the <html> element,
+  -- so the tranform library can use them in the template for the page
+  local html = dom:query_selector("html")[1]
+  if not html then return nil, "cannot find the html element" end
+  html:set_attribute("pagestyle", pagestyle)
+  -- now get information for the specified page format from the configuration
+  -- each format should have corresponding table in the form of {paperwidth=...,paperheight=...,margin=...}
+  local geometry = get_geometry(format)
+  if geometry then
+    html:set_attribute("geometry", geometry)
   else
     html:set_attribute("geometry", "")
   end
@@ -385,6 +394,7 @@ return {
   tidy = tidy,
   download_images = download_images,
   clean_title = clean_title,
+  get_geometry = get_geometry,
   set_page_dimensions=set_page_dimensions,
   file_exists = file_exists,
   get_metadata = get_metadata,

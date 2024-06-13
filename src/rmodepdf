@@ -122,32 +122,33 @@ if args.imgdir and args.imgdir~='""' then
   imgdir = args.imgdir
 end
 
-template = [[
+config.document.geometry = htmllib.get_geometry(args.pageformat)
+config.document.pagestyle = args.pagestyle
+
+config.template = [[
 \documentclass{article}
 \usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec,microtype}
 \usepackage[export]{adjustbox}
-\usepackage[@{lang}]{babel}
+\usepackage[_{document.languages}%s,/{document.languages}]{babel}
 \setmainfont{Literata}
-\usepackage[@{geometry}]{geometry}
-\pagestyle{@{pagestyle}}
-
+\usepackage[@{document.geometry}]{geometry}
+\pagestyle{@{document.pagestyle}}
 \begin{document}
-%s
+_{pages}
+\selectlanguage{@{language}}
+?{Title}{\noindent\textbf{Title: @{Title}}\par}{}
+?{Byline}{\noindent Author: @{Byline}\par}{}
+@{content}
+\clearpage
+/{pages}
 \end{document}
 ]]
 
--- if we get multiple HTML files to process, the others than the first file will be processed using 
--- this template
-local multi_template = [[
-\clearpage
-\selectlanguage{@{lang}}
-%s
-]]
 
 if args.template and args.template~='""' then
   local f = io.open(args.template, "r")
   if f then
-    template = f:read("*all")
+    config.template = f:read("*all")
     f:close()
   else
     log:error("Cannot read template: " .. args.template)
@@ -240,12 +241,13 @@ local function prepare_file(content, baseurl)
 end
 
 local dom, output, metadata = prepare_file(content, baseurl)
-
-
-
-
-config.document.geometry, config.document.pagestyle = htmllib.set_page_dimensions(dom, args.pageformat, args.pagestyle)
+-- keep track of used languages
 table.insert(config.document.languages, metadata.language)
+
+
+
+
+-- config.document.geometry, config.document.pagestyle = htmllib.set_page_dimensions(dom, args.pageformat, args.pagestyle)
 
 
 -- htmlprocess.add_action("html", template)
@@ -299,26 +301,10 @@ end
 
 
 local ttemplate = [[ 
-\documentclass{article}
-\usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec,microtype}
-\usepackage[export]{adjustbox}
-\usepackage[_{document.languages}%s,/{document.languages}]{babel}
-\setmainfont{Literata}
-\usepackage[@{document.geometry}]{geometry}
-\pagestyle{@{document.pagestyle}}
-\begin{document}
-_{pages}
-\selectlanguage{@{language}}
-?{Title}{\noindent\textbf{Title: @{Title}}\par}{}
-?{Byline}{\noindent Author: @{Byline}\par}{}
-@{content}
-\clearpage
-/{pages}
-\end{document}
 ]]
 
 
-processed = textemplates.expand(ttemplate, "", config)
+processed = textemplates.expand(config.template, "", config)
 print(processed)
 
 if args.print then
