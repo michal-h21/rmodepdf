@@ -97,7 +97,6 @@ declare_lang("welsh","cy")
 function M.get_babel_name(lang)
   -- try to convert language shortcut used in HTML to a Babel name used in LaTeX
   local lang = lang or "en" -- use English if we cannot detect the document language
-  print("language_code", lang, languages[lang])
   return languages[lang] or languages[lang:match("^(.-)%-")]
 end
 
