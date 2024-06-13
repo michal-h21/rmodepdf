@@ -133,9 +133,31 @@ displayed in the HTML code outside of \verb|<code>| or \verb|<pre>| elements. Th
 will disable passing of \LaTeX\ commands to the resulting document.
 
 
-\subsection{Document Settings}
+\subsection{Page format}
+
+
+
 
 \section{Configuration}
+
+
+\subsection{The \texttt{document} table}
+
+\begin{description}
+
+  \item[geometry] page dimensions suitable for the Geometry package. 
+  \item[pagestyle]
+  \item[languages]
+\end{description}
+
+\subsection{The \texttt{pages} table}
+
+The \texttt{config.pages} table contains list of all processed HTML documents and their metadata.
+
+\begin{description}
+  \item[language] of the document
+  \item[content] result of HTML to \TeX\ conversion
+\end{description}
 
 \section{\LaTeX\ Templates}
 
@@ -163,6 +185,8 @@ compilation errors.
 \end{description}
 
 \section{Scripting}
+
+
 
 \section{License}
 

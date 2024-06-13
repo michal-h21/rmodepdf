@@ -159,7 +159,7 @@ end
 
 --- Modify string with the raw HTML before readability and DOM parsing
 ---@param content string raw HTML
----@param url string
+---@param url? string
 ---@return string modified content
 function preprocess_content(content, url)
   print(config.current_url)
@@ -169,7 +169,7 @@ end
 --- Modify DOM object before fetchching of images or handling of MathJax
 --- @param dom table DOM object
 --- @param content string original HTML text
---- @param url string
+--- @param url? string
 --- @return table DOM object
 function preprocess_dom(dom,content, url)
   return dom
@@ -179,18 +179,40 @@ end
 --- Modify DOM after all processing by Rmodepdf
 ---@param dom table 
 ---@param content string
----@param url string
+---@param url? string
 ---@return any
 function postprocess_dom(dom, content, url)
   return dom
 end
 
+--- Late post-processing of the config table
+function post_process()
+end
+
+--- Modify the configuration table
+--- @param new_config table Table with 
+--- @param current_table? table
+function add_to_config(new_config, current_table)
+  local current_table = current_table or config
+  for k, v in pairs(new_config) do
+    if type(current_table[k]) == "table" and type(v) == "table" then
+      add_to_config(v, current_table[k])
+    else
+      current_table[k] = v
+    end
+  end
+end
+
+
+
+-- handle the config file
 if args.configfile and args.configfile~='""'  then
   if htmllib.file_exists(args.configfile) then
     log:debug("Loading configfile: " .. args.configfile)
     local script, msg = loadfile(args.configfile)
     if not script then
       log:error("Config file parsing error: " .. msg)
+      os.exit(1)
     else
       script()
     end
@@ -240,20 +262,17 @@ local function prepare_file(content, baseurl)
   return dom, output, metadata
 end
 
+
+----------------------------------------
+--- prepare documents                ---
+----------------------------------------
+
+-- process the first document
 local dom, output, metadata = prepare_file(content, baseurl)
 -- keep track of used languages
 table.insert(config.document.languages, metadata.language)
 
-
-
-
--- config.document.geometry, config.document.pagestyle = htmllib.set_page_dimensions(dom, args.pageformat, args.pagestyle)
-
-
--- htmlprocess.add_action("html", template)
-
 local processed = htmlprocess.process_dom(dom)
-
 metadata.content = processed
 table.insert(config.pages, metadata)
 
@@ -261,8 +280,6 @@ table.insert(config.pages, metadata)
 if #args > 0 then
   -- we must use different template than for the first file, because the default template produces full
   -- LaTeX document, including \end{document}
-  -- htmlprocess.add_action("html[lang]", multi_template)
-  local new_processed = {}
   for _, url in ipairs(args) do
     local content, err_msg = htmllib.curl(url)
     if not content then
@@ -270,16 +287,16 @@ if #args > 0 then
       log:error(err_msg)
     else
       local dom, output, metadata = prepare_file(content, url)
-      new_processed[#new_processed+1] = htmlprocess.process_dom(dom)
-      metadata.content = new_processed[#new_processed]
+      metadata.content = htmlprocess.process_dom(dom) -- new_processed[#new_processed]
       table.insert(config.pages, metadata)
       table.insert(config.document.languages, metadata.language)
     end
   end
-  -- place the newly procesed before \end{document} of the original processed file
-  processed = processed:gsub("\\end{document}%s*$", table.concat(new_processed, "\n\n")).."\n\n\\end{document}"
 end
 
+-------------------------------
+--- handle output file name ---
+-------------------------------
 
 -- if we don't have explicit output filename from the command line or if it is invalid, use the filename based on datetime
 if not output or output == ""  or output == "_" then
@@ -299,10 +316,13 @@ for i, lang in ipairs(config.document.languages) do
   used_languages[lang] = true
 end
 
+-----------------------
+--- expand template ---
+-----------------------
+---
 
-local ttemplate = [[ 
-]]
-
+-- late post processing, you can modify configuration here
+post_process()
 
 processed = textemplates.expand(config.template, "", config)
 print(processed)
