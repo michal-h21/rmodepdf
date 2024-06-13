@@ -141,6 +141,29 @@ will disable passing of \LaTeX\ commands to the resulting document.
 \section{Configuration}
 
 
+\begin{verbatim}
+add_to_config {
+  img_convert = { 
+    -- modify the command used for conversion of svg images to 
+    -- a format suitable for LuaLaTeX
+    svg = "cairosvg -o ${dest} -", 
+  },
+  html_latex = { -- support for LaTeX math in webpages that use MathJax or KaTeX
+    ignored = {"pre", "code"}, -- html elements which shouldn't be processed for LaTeX commands
+    allowed_commands = {"ref", "pageref", "cleveref", "nameref"}
+  },
+}
+\end{verbatim}]
+
+
+\begin{verbatim}
+function post_process()
+  -- set French as a main document language
+  table.insert(config.document.languages, "french")
+end
+\end{verbatim}
+
+
 \subsection{The \texttt{document} table}
 
 \begin{description}
@@ -197,6 +220,7 @@ under the terms of the \LaTeX\ Project Public License, version 1.3.
 \begin{changelog}
   \change{2024-06-13}{Added new hook, \verb|preprocess_content()|, for modyfying of the raw HTML string}
   \change{}{Clenup of some unused code}
+  \change{}{Added \verb|add_to_config()| function, for modyfying of the configuraton table.}
   \change{2024-06-12}{Provided new templating mechanism that doesn't depend on LuaXML templates}
   \change{2024-04-09}{Added \texttt{-\/-nordrview} option}
   \change{}{Basic metadata parsing if rdrview is not available or is disabled}
