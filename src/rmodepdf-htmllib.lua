@@ -1,5 +1,6 @@
 local domobject = require "luaxml-domobject"
 local languages = require "rmodepdf-languages"
+local encodings = require "luaxml-encodings"
 local tmpfiles  = require "rmodepdf-tmpfiles"
 local log = logging.new "htmllib"
 
@@ -152,7 +153,11 @@ local function detect_language(str)
   return str:match("<html[^>]+lang=['\"](.-)['\"]") or "en"
 end
 
--- run the readability command to remove clutter from the HTML page
+--- run the readability command to remove clutter from the HTML page
+---@param content string HTML document
+---@param baseurl string URL of the document
+---@return string new content
+---@return table metadata
 local function readability(content, baseurl)
   local tmpfile = tmpfiles.tmpname() -- the clean up html content will be saved here
   local metadatafile = tmpfiles.tmpname() -- we can get also some metadata
@@ -169,7 +174,14 @@ local function readability(content, baseurl)
   metadata.language = languages.get_babel_name(detect_language(content))
   os.remove(metadatafile) -- we no longer need this file
   html_skeleton(tmpfile, metadata) -- prepare the file for tidy
-  return tmpfile, metadata -- we can use tidy on the tmpfile, so we will keep the content inside
+  -- return HTML string modified by rdrview
+  local f = io.open(tmpfile, "r")
+  if f then
+    local newcontent = f:read("*all")
+    f:close()
+    return newcontent, metadata
+  end
+  return content, metadata -- we can use tidy on the tmpfile, so we will keep the content inside
 end
 
 local function get_metadata(dom, baseurl)
@@ -203,6 +215,17 @@ local function get_metadata(dom, baseurl)
   end)
 
   return metadata
+end
+
+local function to_utf8(content)
+  local enc = encodings.find_html_encoding(content)
+  if enc then
+    local mapping = encodings.load_mapping(enc)
+    if mapping then
+      content = encodings.recode(content, mapping)
+    end
+  end
+  return content
 end
 
 -- in the future, we should convert HTML to XML ourselves, because tidy removes spaces when we want them
@@ -365,4 +388,5 @@ return {
   set_page_dimensions=set_page_dimensions,
   file_exists = file_exists,
   get_metadata = get_metadata,
+  to_utf8 = to_utf8,
 }

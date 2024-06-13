@@ -44,7 +44,6 @@ local htmllib = require "rmodepdf-htmllib"
 -- htmlprocess needs to be global, to be available in config files
 htmlprocess = require "rmodepdf-htmltemplates"
 local domobject = require "luaxml-domobject"
-local encodings = require "luaxml-encodings"
 local mathjax = require "rmodepdf-mathjax"
 local compile = require "rmodepdf-compile"
 local tmpfiles = require "rmodepdf-tmpfiles"
@@ -155,13 +154,33 @@ if args.template and args.template~='""' then
   end
 end
 
--- some functions that can be redefined in the config file
---
-function preprocess_dom(dom,content)
+-- some functions that can be redefined in the config file and used for modyfing of the HTML code or DOM
+
+--- Modify string with the raw HTML before readability and DOM parsing
+---@param content string raw HTML
+---@param url string
+---@return string modified content
+function preprocess_content(content, url)
+  print(config.current_url)
+  return content
+end
+
+--- Modify DOM object before fetchching of images or handling of MathJax
+--- @param dom table DOM object
+--- @param content string original HTML text
+--- @param url string
+--- @return table DOM object
+function preprocess_dom(dom,content, url)
   return dom
 end
 
-function postprocess_dom(dom, content)
+
+--- Modify DOM after all processing by Rmodepdf
+---@param dom table 
+---@param content string
+---@param url string
+---@return any
+function postprocess_dom(dom, content, url)
   return dom
 end
 
@@ -188,26 +207,13 @@ end
 local function prepare_file(content, baseurl)
   local content = content
   -- recode document from 8-bit encoding to UTF-8 if necessary
-  local enc = encodings.find_html_encoding(content)
-  if enc then
-    local mapping = encodings.load_mapping(enc)
-    if mapping then
-      content = encodings.recode(content, mapping)
-    end
-  end
-  local tmpfile, metadata
+  content = htmllib.to_utf8(content)
+  config.current_url = baseurl
+  -- call hook to clean HTML before passing to readability
+  content = preprocess_content(content, baseurl)
+  local metadata
   if not args.nordrview then
-    tmpfile, metadata = htmllib.readability(content, baseurl)
-    if not tmpfile then
-      log:error(metadata)
-      metadata = nil
-    else
-      local f = io.open(tmpfile, "r")
-      if f then
-        content = f:read("*all")
-        f:close()
-      end
-    end
+    content, metadata = htmllib.readability(content, baseurl)
   end
   local dom = domobject.html_parse(content)
   if not metadata then
@@ -215,7 +221,7 @@ local function prepare_file(content, baseurl)
     metadata = htmllib.get_metadata(dom, baseurl)
   end
   local output = htmllib.clean_title(metadata.Title)
-  dom = preprocess_dom(dom, content)
+  dom = preprocess_dom(dom, content, baseurl)
   if not args.noimages then
     dom = htmllib.download_images(dom, imgdir)
   else
@@ -229,8 +235,7 @@ local function prepare_file(content, baseurl)
     local allowed_commands = config.html_latex.allowed_commands
     mathjax.process_latex(dom, ignored, allowed_commands)
   end
-  config.current_url = baseurl
-  dom = postprocess_dom(dom, content)
+  dom = postprocess_dom(dom, content, baseurl)
   return dom, output, metadata
 end
 
