@@ -89,7 +89,7 @@ xmltransform.add_action("th", "\\cell{%s}")
 
 -- this is the original code for verbatim, but I changed LuaXML to not escape characters in verbatim,
 -- so we can use the verbatim environment
-xmltransform.add_action("pre", [[{\parindent=0pt\obeylines\ttfamily\catcode`\ =\active\def {\ }%%
+xmltransform.add_action("pre", [[{\parindent=0pt\obeylines\ttfamily\catcode`\ =\active\def {\ }\catcode`\#=11%%
 %s}
 
 ]], {verbatim=true})
