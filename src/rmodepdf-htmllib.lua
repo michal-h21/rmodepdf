@@ -346,7 +346,7 @@ end
 
 local function clean_title(title)
   if not title then return nil, "no title given" end
-  title = title:gsub("[%.%,%?%!%:]", ""):gsub("%s+", "_")
+  title = title:gsub("[%.%,%?%!%:%/%~]", ""):gsub("%s+", "_")
   return title
 end
 
