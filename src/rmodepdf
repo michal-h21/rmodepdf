@@ -31,6 +31,15 @@ config = {
   }
 }
 
+--- we must add  this configuration separatelly, because we already use other 
+config.mime_to_ext = {
+    ["image/png"] = {ext = "png"},
+    ["image/jpeg"] = {ext = "jpg"},
+    ["image/svg+xml"] = {ext = "pdf", convert = config.img_convert.svg},
+    ["image/gif"] = {ext = "png", convert = config.img_convert.gif},
+    ["image/webp"] = {ext = "png", convert = config.img_convert.webp},
+}
+
 local lapp = require "lapp-mk4"
 logging = require "make4ht-logging"
 local htmllib = require "rmodepdf-htmllib"
@@ -129,8 +138,8 @@ config.template = [[
 \begin{document}
 _{pages}
 \selectlanguage{@{language}}
-?{Title}{\noindent\textbf{Title: @{Title}}\par}{}
-?{Byline}{\noindent Author: @{Byline}\par}{}
+?{title}{\noindent\textbf{Title: @{title}}\par}{}
+?{author}{\noindent Author: @{author}\par}{}
 @{content}
 /{\clearpage}
 \end{document}
@@ -218,14 +227,6 @@ if not config.document.geometry then
   config.document.geometry = htmllib.get_geometry(args.pageformat)
 end
 
---- we must add  this configuration separatelly, because we already use other 
-config.mime_to_ext = {
-    ["image/png"] = {ext = "png"},
-    ["image/jpeg"] = {ext = "jpg"},
-    ["image/svg+xml"] = {ext = "pdf", convert = config.img_convert.svg},
-    ["image/gif"] = {ext = "png", convert = config.img_convert.gif},
-    ["image/webp"] = {ext = "png", convert = config.img_convert.webp},
-}
 
 --- get DOM and metadata for HTML file
 --- @param content string HTML content
@@ -328,7 +329,7 @@ end
 ---
 
 -- late post processing, you can modify configuration here
-post_process()
+postprocess()
 
 processed = textemplates.expand(config.template, "", config)
 print(processed)
