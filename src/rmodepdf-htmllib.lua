@@ -172,6 +172,8 @@ local function readability(content, baseurl)
   local metadata = parse_metadatafile(metadatafile)
   metadata.url = baseurl
   metadata.language = languages.get_babel_name(detect_language(content))
+  metadata.title = metadata.Title
+  metadata.author = metadata.Byline
   os.remove(metadatafile) -- we no longer need this file
   html_skeleton(tmpfile, metadata) -- prepare the file for tidy
   -- return HTML string modified by rdrview
@@ -201,9 +203,11 @@ local function get_metadata(dom, baseurl)
       local content = el:get_attribute("content")
       if property == "og:title" then
         metadata.Title = content
+        metadata.title = content
       elseif property == "og:description" then
       elseif prop_name == "author" then
         metadata.Byline = content
+        metadata.author = content
       elseif property == "og:site_name" then
         metadata["Site name"] = content
       end
