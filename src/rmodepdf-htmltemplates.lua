@@ -2,16 +2,19 @@ local xmltransform = require "luaxml-transform"
 
 -- this trick is used to print @{} in TeX: @@{}{}
 xmltransform.add_action("head", [[
-\noindent\begin{tabular}{@@{}{}p{.2\textwidth}p{.75\textwidth}@@{}{}}
-%s
-\end{tabular}\par\bigskip
-
 \tableofcontents
 ]])
+-- xmltransform.add_action("head", [[
+-- \noindent\begin{tabular}{@@{}{}p{.2\textwidth}p{.75\textwidth}@@{}{}}
+-- %s
+-- \end{tabular}\par\bigskip
 
-xmltransform.add_action("meta", [[\textbf{@{name}} & @{content}\\ ]])
-xmltransform.add_action("meta[name='author']", [[\textbf{@{name}} & \textbf{@{content}}\\ ]])
-xmltransform.add_action("title", [[\textbf{title} & %s\\ ]])
+-- \tableofcontents
+-- ]])
+
+-- xmltransform.add_action("meta", [[\textbf{@{name}} & @{content}\\ ]])
+-- xmltransform.add_action("meta[name='author']", [[\textbf{@{name}} & \textbf{@{content}}\\ ]])
+-- xmltransform.add_action("title", [[\textbf{title} & %s\\ ]])
 xmltransform.add_action("img", [[\noindent\includegraphics[max width=\textwidth]{@{src}}]])
 
 xmltransform.add_action("h1", [[\addcontentsline{toc}{section}{%s}\section*{%s}
