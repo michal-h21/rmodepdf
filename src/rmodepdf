@@ -128,7 +128,7 @@ config.document.pagestyle = args.pagestyle
 
 config.template = [[
 \documentclass{article}
-\usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec,microtype}
+\usepackage{graphicx,csquotes,cals,responsive,linebreaker,fontspec,microtype,hyperref}
 \usepackage[export]{adjustbox}
 \usepackage[_{document.languages}%s/{,}]{babel}
 \setmainfont{Literata}
@@ -140,6 +140,7 @@ _{pages}
 \selectlanguage{@{language}}
 ?{title}{\noindent\textbf{Title: @{title}}\par}{}
 ?{author}{\noindent Author: @{author}\par}{}
+\noindent\href{@{url}}{@{url}}
 @{content}
 /{\clearpage}
 \end{document}
