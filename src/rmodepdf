@@ -333,7 +333,7 @@ end
 postprocess()
 
 processed = textemplates.expand(config.template, "", config)
-print(processed)
+-- print(processed)
 
 ----------------------
 --- output         ---
