@@ -296,6 +296,7 @@ if #args > 0 then
     else
       local dom, output, metadata = prepare_file(content, url)
       metadata.content = htmlprocess.process_dom(dom) -- new_processed[#new_processed]
+      metadata.url = metadata.url or url
       table.insert(config.pages, metadata)
       table.insert(config.document.languages, metadata.language)
     end
