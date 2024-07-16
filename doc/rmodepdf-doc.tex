@@ -168,24 +168,70 @@ end
 
 \begin{description}
 
-  \item[geometry] page dimensions suitable for the Geometry package. 
-  \item[pagestyle]
-  \item[languages]
+  \item[preamble\_extras] -- additional code to be inserted at the end of the
+    document preamble. For example font settings, extra packages, etc.
+  \item[geometry] -- string with page dimensions in format suitable for the Geometry package. 
+  \item[pagestyle] -- document page style.
+  \item[languages] -- list of languages used by the processed pages. This is populated during page processing.
+
+
 \end{description}
 
 \subsection{The \texttt{pages} table}
 
 The \texttt{config.pages} table contains list of all processed HTML documents and their metadata.
+Each item in the list contains the following properties:
 
 \begin{description}
-  \item[language] of the document
-  \item[content] result of HTML to \TeX\ conversion
+  \item[language] -- language of the document.
+  \item[content] -- result of HTML to \TeX\ conversion.
+  \item[author] -- document author.
+  \item[title] -- document title.
+  \item[url] -- document URL.
 \end{description}
+
 
 \section{\LaTeX\ Templates}
 
 
 \subsection{Syntax}
+
+\begin{description}
+  \item[Variable Printing] \verb|@{variablename}|: Variables are contained in the \verb|config| table. Using a dot, properties of sub-tables can also be printed. For example, \texttt{@\{document.\allowbreak preamble\_extras\}} prints the \texttt{config.\allowbreak document.preamble\_extras} variable.
+  
+  \item[Loops] \verb|_{variablename}loop code/{separator}|: Variables used must be arrays. For example, \verb|document.languages| contains the languages of all translated documents in a format suitable for the Babel package, or \verb|pages|, which contains all converted documents. In the loop code, variables of the currently processed array are available. If the array contains only strings, the placeholder \verb|%s| can be used, as with \verb|document.languages|. If the current object is a table, its fields can be accessed directly using \verb|@{variablename}|.
+  
+  \item[Conditions] \verb|?{variablename}{true}{false}|: Used to insert elements like the title and author, which may not be present on all pages.
+\end{description}
+
+\begin{verbatim}
+\documentclass{article}
+\usepackage{linebreaker,responsive}
+\usepackage[_{document.languages}%s/{,}] {babel}
+\usepackage[@{document.geometry}]{geometry}
+\pagestyle{@{document.pagestyle}}
+@{document.preamble_extras}
+\begin{document}
+_{pages}
+\selectlanguage{@{language}}
+?{title}{Title: @{title}}\par}{}
+?{author}{Author: @{author}\par}{}
+\href{@{url}}{@{url}}\par
+@{content}
+/{\clearpage}
+\end{document}
+\end{verbatim}
+
+Note that when processing an array, we must distinguish whether it contains
+strings or tables. Strings are displayed using \verb|%s|. If it is a table, its
+elements become active variables and can be displayed using
+\verb|@{variablename}|. You can see the difference in processing the array
+\verb|document.languages|, which contains languages as strings, and
+\verb|pages|, which contains tables with metadata from processed pages.
+
+
+
+
 
 \subsubsection{Variable expansion}
 
@@ -209,6 +255,19 @@ compilation errors.
 
 \section{Scripting}
 
+The configuration script is executed before the actual conversion, so it cannot
+directly influence the conversion process. However, we can define several
+callback functions that allow us to affect the conversion. These functions are
+as follows:
+
+\begin{description}
+  \item[\texttt{preprocess\_content}] -- modify string with the raw HTML before
+    readability and DOM parsing.
+  \item[\texttt{preprocess\_dom}] -- modify DOM object before fetchching of images
+    or handling of MathJax.
+  \item[\texttt{postprocess\_dom}] -- modify DOM after all processing by Rmodepdf.
+  \item[\texttt{postprocess}] -- late post-processing of the config table.
+\end{description}
 
 
 \section{License}
