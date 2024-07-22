@@ -7,17 +7,58 @@ local function list_to_hash(tbl)
   return t
 end
 
-local function is_math(text, allowed_commands)
-  if text:match("\\%(.+\\%)") then return true end
-  if text:match("\\%[.+\\%]") then return true end
-  if text:match("%$%$.+%$%$") then return true end
-  -- support for $ is a bit more complicated, as we don't want to 
-  -- be too eagerly. $ can be used in normal text
-  -- match $ ... \ ... $
-  if text:match("%$.*%\\.+%$") then return true end
-  -- match $ ... = ... $ 
-  if text:match("%$.+%=.+%$") then return true end
-  if text:match("\\begin.+\\end") then return true end
+local math_patterns = {
+"\\%(.+\\%)",
+"\\%[.+\\%]",
+"%$%$.+%$%$",
+"%$.*%\\.+%$",
+"%$.+%=.+%$",
+"\\begin.+\\end" ,
+}
+
+--- find if text contains math
+---@param text string where to look for math
+---@param position integer|nil starting position of the lookup
+---@return integer
+---@return integer|nil
+local function find_math(text, position)
+  -- loop over math patterns and try to find if the text node contains any
+  -- return 
+  local position = position or 1
+  local found = {}
+  for _, pattern in ipairs(math_patterns) do
+    local start, stop = string.find(text, pattern, position)
+    if start then found[#found+1] = {start, stop} end
+  end
+  if #found == 0 then return nil end
+  -- there may be multiple matches. we need to go from left to right and return the first
+  table.sort(found, function(a,b) return a[1] < b[1] end)
+  return table.unpack(found[1])
+end
+
+
+--- get table with text and math chunks from the current text node
+---@param text string
+---@return nil
+local function get_chunks(text)
+  local chunks = {}
+  local previous = 1
+  local start, stop = find_math(text)
+  -- if we didn't find any math, return nil so the original text will be not modified
+  if not start then return nil end
+  while start do
+    if start > 1 then 
+      chunks[#chunks+1] = {string = text:sub(previous, start-1), type="text"}
+    end
+    chunks[#chunks+1] = {string = text:sub(start, stop), type="math"}
+    previous = stop + 1
+    start, stop = find_math(text, previous)
+  end
+  if previous < string.len(text) then
+    chunks[#chunks+1] = {string = text:sub(previous), type="text"}
+  end
+  return chunks
+
 end
 
 local function fix_latex(child, allowed_commands)
@@ -25,12 +66,24 @@ local function fix_latex(child, allowed_commands)
   -- whole text that contain LaTeX math. we can add more advanced
   -- parser in the future, but I think that it sufficess at the moment
   local text = child._text
-  if is_math(text, allowed_commands) then
+  local chunks = get_chunks(text)
+  -- if is_math(text, allowed_commands) then
+  if chunks then
     -- add the mathjax element
     local parent = child:get_parent()
-    local mathjax = parent:create_element("mathjax")
-    local text = mathjax:create_text_node(text)
-    mathjax:add_child_node(text)
+    local mathjax = parent:create_element("mathjax-parent")
+    -- add <mathjax> or text nodes for all chunks of math
+    for _, child in ipairs(chunks) do
+      if child.type == "math" then
+        local child_element = mathjax:create_element("mathjax")
+        local text = child_element:create_text_node(child.string)
+        child_element:add_child_node(text)
+        mathjax:add_child_node(child_element)
+      else
+        local text = mathjax:create_text_node(child.string)
+        mathjax:add_child_node(text)
+      end
+    end
     child:replace_node(mathjax)
   end
 end
