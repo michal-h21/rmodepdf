@@ -142,4 +142,7 @@ xmltransform.add_action("h1 a[href], h2 a[href], h3 a[href], h4 a[href], h5 a[hr
 -- mathjax is special element added by rmodepdf around LaTeX math
 xmltransform.add_action("mathjax",[[%s]], {verbatim=true,collapse_newlines=false})
 
+xmltransform.add_action("hyperlink", "\\hyperlink{@{href}}{%s}")
+xmltransform.add_action("hypertarget", "\\hypertarget{@{id}}{%s}")
+
 return xmltransform

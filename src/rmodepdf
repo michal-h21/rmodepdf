@@ -56,22 +56,23 @@ local log = logging.new "rmodepdf"
 
 local msg = [[
 Usage: rmodepdf [options] url
--b,--baseurl     (default "")      Base URL used when the HTML content is read from the standard input
--c,--configfile  (default "")      Filename of Lua configuration file
--h,--help                          Print help message
--i,--imgdir      (default "")      Download images and save them to the specified directory
--l,--loglevel    (default status)  Set log level
-                                   possible values: debug, info, status, warning, error, fatal
--n,--noimages                      Don't download images
--N,--nomathjax                     Don't process LaTeX commands in the HTML document
--t,--template    (default "")      LaTeX template
--o,--output      (default "")      Output file name
--p,--print                         Print the converted LaTeX source
--P,--pageformat  (default ebook)   Page format 
--R,--nordrview                     Don't use rdrview to get the clean contents from the web pages
--s,--pagestyle   (default empty)   \pagestyle for the document
--v,--version                       Print version
-<url>            (string)
+-b,--baseurl       (default "")      Base URL used when the HTML content is read from the standard input
+-c,--configfile    (default "")      Filename of Lua configuration file
+-h,--help                            Print help message
+-H,--nohyperlinks                    Don't create special elements for internal hyperlinks  
+-i,--imgdir        (default "")      Download images and save them to the specified directory
+-l,--loglevel      (default status)  Set log level
+                                     possible values: debug, info, status, warning, error, fatal
+-n,--noimages                        Don't download images
+-N,--nomathjax                       Don't process LaTeX commands in the HTML document
+-t,--template      (default "")      LaTeX template
+-o,--output        (default "")      Output file name
+-p,--print                           Print the converted LaTeX source
+-P,--pageformat    (default ebook)   Page format 
+-R,--nordrview                       Don't use rdrview to get the clean contents from the web pages
+-s,--pagestyle     (default empty)   \pagestyle for the document
+-v,--version                         Print version
+<url>              (string)
 ]]
  -- <urladdress>  (string)      URL to be processed
 
@@ -259,6 +260,11 @@ local function prepare_file(content, baseurl)
     -- remove images with the --noimages command line option
     for _, el in ipairs(dom:query_selector("img")) do el:remove_node() end
   end
+  if not args.nohyperlinks then
+    -- handle links that points inside document
+    htmllib.handle_local_links(dom)
+  end
+
   if not args.nomathjax then
     -- process text nodes for LaTeX commands. This should support pages that use MathJax to render math
     -- keep inline LaTeX code, for example MathJax content

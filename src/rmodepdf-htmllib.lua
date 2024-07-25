@@ -373,6 +373,7 @@ local function get_geometry(format)
 end
 
 
+-- this function is not used anymore, because of the change in the templating procedure
 local function set_page_dimensions(dom, format, pagestyle)
   -- save information for the geometry package and \pageformat as attributes for the <html> element,
   -- so the tranform library can use them in the template for the page
@@ -391,6 +392,39 @@ local function set_page_dimensions(dom, format, pagestyle)
 
 end
 
+
+--- Replace inernall links in DOM with special elements that can be styled differently than links to external URLs.
+---@param dom table 
+local function handle_local_links(dom)
+  local ids = {}
+  -- collect all id or name attributes
+  dom:traverse_elements(function(el)
+    local id = el:get_attribute("id") or el:get_attribute("name")
+    if id then ids[id] = el end
+  end)
+  -- now process all links and find if they are inter
+  for _, el in ipairs(dom:query_selector("a[href]")) do
+    local href = el:get_attribute("href")
+    -- detect only hrefs that point to an internal id
+    local id = href:match("^%#(.+)")
+    if id  then
+      -- change <a> to <hyperlink>, so it can use different templates
+      el._name = "hyperlink"
+      el:set_attribute("href", id)
+      if ids[id] then
+        -- now add a child node to the node with the corresponding id
+        local other = ids[id]
+        local hypertarget = other:create_element("hypertarget", {id=id})
+        -- I hope this doesn't cause problems. We will just insert \hypertarget at the start of the element with current id
+        other:add_child_node(hypertarget, 1)
+      end
+    end
+  end
+
+end
+
+
+
 return {
   load_file = load_file,
   curl = curl,
@@ -403,4 +437,6 @@ return {
   file_exists = file_exists,
   get_metadata = get_metadata,
   to_utf8 = to_utf8,
+  handle_local_links = handle_local_links,
+
 }
