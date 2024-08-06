@@ -8,6 +8,7 @@ that uses port of Firefox's reader view functionality.
 # Documentation
 
 You can find the documentation [here](https://www.kodymirus.cz/rmodepdf/).
+See also the [handout](https://www.kodymirus.cz/presentations/responsive_handout.html) of my talk at the TUG 2024 conference.
 
 ## Intented support
 
