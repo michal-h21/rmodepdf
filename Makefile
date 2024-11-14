@@ -12,6 +12,8 @@ else
 	SUDO:=sudo
 endif
 
+.PHONY: test
+
 # install the executable only if the symlink doesn't exist yet
 ifeq ("$(wildcard $(EXECUTABLE))","")
 	INSTALL_COMMAND:=$(SUDO) ln -s $(INSTALL_DIR)/$(name) $(EXECUTABLE)
@@ -25,4 +27,5 @@ install:
 	echo $(wildcard $(EXECUTABLE))
 	$(INSTALL_COMMAND)
 
-
+test:
+	busted test/textemplates.lua
