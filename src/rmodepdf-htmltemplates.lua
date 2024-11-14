@@ -1,4 +1,20 @@
-local xmltransform = require "luaxml-transform"
+local xmltransform = {}
+local transform = require "luaxml-transform"
+
+local htmlobj = transform.new()
+
+function xmltransform.add_action(selector, template, parameters)
+  htmlobj:add_action(selector, template, parameters)
+end
+
+function xmltransform.process_dom(dom)
+  return htmlobj:process_dom(dom)
+end
+
+function xmltransform.get_htmlobject()
+  return htmlobj
+end
+
 
 -- this trick is used to print @{} in TeX: @@{}{}
 xmltransform.add_action("head", [[
